@@ -64,7 +64,7 @@ def clear_fields(_step):
             .prop('disabled', false)
             .removeClass('is-disabled');
     '''
-    for index in range(1, 4):
+    for index in range(1, 3):
         js = js_str.format(selector=SELECTORS['url_inputs'], index=index - 1)
         world.browser.execute_script(js)
         _clear_field(index)
