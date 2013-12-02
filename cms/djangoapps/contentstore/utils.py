@@ -19,6 +19,13 @@ from xmodule.course_module import CourseDescriptor
 from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
 
+unit_stateById = {}              # dictionary of unit states: key=ID, value=stateString
+
+MIXED_STATE_ICON_STRING = "icon-adjust icon-units-mixed-state"
+ALL_PUBLIC_ICON_STRING = "icon-circle-blank icon-units-all-public"
+ALL_PRIVATE_ICON_STRING = "icon-circle icon-units-all-private"
+
+
 log = logging.getLogger(__name__)
 
 # In order to instantiate an open ended tab automatically, need to have this data
@@ -267,3 +274,86 @@ def remove_extra_panel_tab(tab_type, course):
         course_tabs = [ct for ct in course_tabs if ct != tab_panel]
         changed = True
     return changed, course_tabs
+
+
+
+
+#_________________________________________________________________________________
+#
+# check the supplied unit's public/private/draft state, returning
+# a string describing the style for the unit's icon to show
+#
+def get_unit_state_icon_name( unit ):
+    return_string = MIXED_STATE_ICON_STRING
+    state = compute_unit_state(unit)
+
+    if state == "public":
+        return_string = ALL_PUBLIC_ICON_STRING
+
+    if (state == "private") or (state == "draft"):
+        return_string = ALL_PRIVATE_ICON_STRING
+
+    return return_string
+
+#_________________________________________________________________________________
+#
+# check all the units belonging to the supplied subsection, returning
+# a string describing the style for the SUBSECTION icon to show
+#
+# NOTE: this function assumes the 'unit_stateById' dictionary has been
+#       populated before it is called (see 'catalogunit_states' below)
+#
+def get_subsection_state( subsection ):
+    unit_count = 0
+    return_string = MIXED_STATE_ICON_STRING
+    unit_public_count = 0
+    unit_count = 0
+
+    for unit in subsection.get_children():
+        if unit_stateById[ unit.location.name ] == "public":
+            unit_public_count += 1
+        unit_count += 1
+
+    if unit_count == unit_public_count :
+        return_string = ALL_PUBLIC_ICON_STRING
+
+    if unit_public_count == 0:
+        return_string = ALL_PRIVATE_ICON_STRING
+
+    return return_string
+
+#_________________________________________________________________________________
+#
+# check all the units belonging to all subsections, returning
+# a string describing the style for the icon to show
+#
+def catalog_unit_states( section ):
+    return_string = MIXED_STATE_ICON_STRING
+    foundPrivate = 0                        # counts the number of private units
+    found_public = 0                         # counts the number of public units
+    found_units = 0                          # counts the total number of units
+    for child in section.get_children():
+      found_private_subsection = 0            # counts the number of private units in this subsection
+      found_public_subsection = 0             # counts the number of public units in this subsection
+      found_units_subsection = 0              # counts the total number of units in this subsection
+      for unit in child.get_children():
+        found_units_subsection += 1
+        found_units += 1
+        state = compute_unit_state(unit)
+        unit_stateById[ unit.location.name ] = state
+
+        if state == "public":
+            found_public += 1
+            found_public_subsection += 1
+
+        if (state == "private") or (unit_state == "draft"):
+            foundPrivate += 1
+            found_private_subsection += 1
+
+    if found_public == found_units:
+        return_string = ALL_PUBLIC_ICON_STRING
+
+    if found_public == 0:
+        return_string = ALL_PRIVATE_ICON_STRING
+
+    return return_string
