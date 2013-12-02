@@ -276,14 +276,11 @@ def remove_extra_panel_tab(tab_type, course):
     return changed, course_tabs
 
 
-
-
-#_________________________________________________________________________________
-#
-# check the supplied unit's public/private/draft state, returning
-# a string describing the style for the unit's icon to show
-#
 def get_unit_state_icon_name( unit ):
+    """
+    Check the supplied unit's public/private/draft state, returning
+    a string describing the icon style for the unit
+    """
     return_string = MIXED_STATE_ICON_STRING
     state = compute_unit_state(unit)
 
@@ -295,15 +292,14 @@ def get_unit_state_icon_name( unit ):
 
     return return_string
 
-#_________________________________________________________________________________
-#
-# check all the units belonging to the supplied subsection, returning
-# a string describing the style for the SUBSECTION icon to show
-#
-# NOTE: this function assumes the 'unit_stateById' dictionary has been
-#       populated before it is called (see 'catalogunit_states' below)
-#
 def get_subsection_state( subsection ):
+    """
+    Check all the units belonging to the supplied subsection, returning
+    a string describing the style for the SUBSECTION icon to show
+
+    NOTE: this function assumes the 'unit_stateById' dictionary has been
+    populated before it is called (see 'catalog_unit_states' below)
+    """
     unit_count = 0
     return_string = MIXED_STATE_ICON_STRING
     unit_public_count = 0
@@ -322,20 +318,19 @@ def get_subsection_state( subsection ):
 
     return return_string
 
-#_________________________________________________________________________________
-#
-# check all the units belonging to all subsections, returning
-# a string describing the style for the icon to show
-#
 def catalog_unit_states( section ):
+    """
+    Check all the units belonging to all subsections, returning
+    a string describing the style for the icon to show
+    """
     return_string = MIXED_STATE_ICON_STRING
-    foundPrivate = 0                        # counts the number of private units
-    found_public = 0                         # counts the number of public units
-    found_units = 0                          # counts the total number of units
+    foundPrivate = 0                            # counts the number of private units
+    found_public = 0                            # counts the number of public units
+    found_units = 0                             # counts the total number of units
     for child in section.get_children():
-      found_private_subsection = 0            # counts the number of private units in this subsection
-      found_public_subsection = 0             # counts the number of public units in this subsection
-      found_units_subsection = 0              # counts the total number of units in this subsection
+      found_private_subsection = 0              # counts the number of private units in this subsection
+      found_public_subsection = 0               # counts the number of public units in this subsection
+      found_units_subsection = 0                # counts the total number of units in this subsection
       for unit in child.get_children():
         found_units_subsection += 1
         found_units += 1
@@ -346,7 +341,7 @@ def catalog_unit_states( section ):
             found_public += 1
             found_public_subsection += 1
 
-        if (state == "private") or (unit_state == "draft"):
+        if (state == "private") or (state == "draft"):
             foundPrivate += 1
             found_private_subsection += 1
 

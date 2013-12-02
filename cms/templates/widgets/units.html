@@ -1,5 +1,6 @@
 <%! from django.core.urlresolvers import reverse %>
 <%! from contentstore.utils import compute_unit_state %>
+<%! from contentstore.utils import get_unit_state_icon_name %>
 <%! from xmodule.modulestore.django import loc_mapper %>
 
 <!--
@@ -39,7 +40,8 @@ This def will enumerate through a passed in subsection and list all of the units
       <div class="item-actions">
 	<a href="#" data-tooltip="Delete this unit" class="delete-button" data-locator="${unit_locator}">
         <span class="delete-icon"></span></a>
-	<span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"></span>
+	    <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"></span>
+        <span class="${get_unit_state_icon_name( unit )}" ></span>
       </div>
       % endif
     </div>

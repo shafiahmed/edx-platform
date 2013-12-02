@@ -1,6 +1,8 @@
 <%inherit file="base.html" />
 <%!
   import logging
+  from contentstore.utils import get_subsection_state
+  from contentstore.utils import catalog_unit_states
   from xmodule.util import date_utils
   from django.utils.translation import ugettext as _
   from django.core.urlresolvers import reverse
@@ -182,8 +184,17 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
               </div>
 
               <div class="item-actions">
+
+
+
                 <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><span class="delete-icon"></span></a>
+                <i class="${catalog_unit_states(section)}"></i>
                 <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"></span>
+
+
+
+
+
               </div>
             </header>
             <div class="subsection-list">
@@ -216,8 +227,9 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <div class="gradable-status" data-initial-status="${subsection.format if subsection.format is not None else _('Not Graded')}">
                     </div>
 
-                    <div class="item-actions">
+                    <div class="item-actcatalions">
                       <a href="#" data-tooltip="${_('Delete this subsection')}" class="delete-button delete-subsection-button"><span class="delete-icon"></span></a>
+                      <i class="${get_subsection_state( subsection )}"></i>
                       <span data-tooltip="${_('Drag to reorder')}" class="drag-handle subsection-drag-handle"></span>
                     </div>
                   </div>
