@@ -24,7 +24,7 @@ unit_stateById = {}              # dictionary of unit states: key=ID, value=stat
 MIXED_STATE_ICON_STRING = "icon-adjust icon-units-mixed-state"
 ALL_PUBLIC_ICON_STRING = "icon-circle-blank icon-units-all-public"
 ALL_PRIVATE_ICON_STRING = "icon-circle icon-units-all-private"
-
+NO_UNITS_ICON_STRING = ""
 
 log = logging.getLogger(__name__)
 
@@ -310,11 +310,14 @@ def get_subsection_state( subsection ):
             unit_public_count += 1
         unit_count += 1
 
-    if unit_count == unit_public_count :
-        return_string = ALL_PUBLIC_ICON_STRING
+    if unit_count == 0:
+        return_string = NO_UNITS_ICON_STRING
+    else:
+        if unit_count == unit_public_count :
+            return_string = ALL_PUBLIC_ICON_STRING
 
-    if unit_public_count == 0:
-        return_string = ALL_PRIVATE_ICON_STRING
+        if unit_public_count == 0:
+            return_string = ALL_PRIVATE_ICON_STRING
 
     return return_string
 
