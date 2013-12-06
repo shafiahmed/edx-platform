@@ -187,8 +187,15 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
 
-                <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><span class="delete-icon"></span></a>
-                <a href="#"><i class="${catalog_unit_states(section)} "></i></a>
+                <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button">
+                    <span class="delete-icon"></span>
+                </a>
+
+                <div style="position: relative;" href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button">
+                    <i class="${catalog_unit_states(section)} "></i>
+                    <div style="position: absolute; width: 250px; height: 100px; right: 0; background-color: #ddd;"><input type="button" /><input type="button" /><input type="button" /></div>
+                </div>
+
                 <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"></span>
 
 
@@ -266,11 +273,44 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
           <input class="start-time time" type="text" name="start_time" value="" placeholder="HH:MM" class="time" size='10' autocomplete="off"/>
         </div>
 
+
+          <% print("\n\n------------ ARGGG -----------\n\n"); %>
+
+
+
+
         <div class="description">
           <p>${_('On the date set above, this section - {name} - will be released to students. Any units marked private will only be visible to admins.').format(name='<strong class="section-name"></strong>')}</p>
         </div>
       </div>
       <a href="#" class="save-button">${_("Save")}</a><a href="#" class="cancel-button">${_("Cancel")}</a>
+    </div>
+  </div>
+
+  <div class="change-units-status-dialog-section showAsModal">
+    <div class="settings">
+      <h3>${_("Bulk Privacy Settings Change")}</h3>
+
+        <!--
+      <div class="picker datepair">
+        <div class="field field-start-date">
+          <label for="">${_("Release Day")}</label>
+          <input class="start-date date" type="text" name="start_date" value="" placeholder="MM/DD/YYYY" class="date" size='15' autocomplete="off"/>
+        </div>
+        <div class="field field-start-time">
+          <label for="">${_("Release Time")} (<abbr title="${_("Coordinated Universal Time")}">UTC</abbr>)</label>
+          <input class="start-time time" type="text" name="start_time" value="" placeholder="HH:MM" class="time" size='10' autocomplete="off"/>
+        </div>
+
+        <div class="description">
+          <p>${_('On the date set above, this section - {name} - will be released to students. Any units marked private will only be visible to admins.').format(name='<strong class="section-name"></strong>')}</p>
+        </div>
+      </div>
+        -->
+
+      <a href="#" class="save-button">${_("Make Public")}</a>
+      <a href="#" class="save-button">${_("Make Private")}</a>
+      <a href="#" class="cancel-button">${_("Cancel")}</a>
     </div>
   </div>
 </%block>
