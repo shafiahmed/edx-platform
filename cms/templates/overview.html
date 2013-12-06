@@ -188,7 +188,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
 
                 <a href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button"><span class="delete-icon"></span></a>
-                <i class="${catalog_unit_states(section)}"></i>
+                <a href="#"><i class="${catalog_unit_states(section)} "></i></a>
                 <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"></span>
 
 
@@ -229,7 +229,7 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
 
                     <div class="item-actcatalions">
                       <a href="#" data-tooltip="${_('Delete this subsection')}" class="delete-button delete-subsection-button"><span class="delete-icon"></span></a>
-                      <i class="${get_subsection_state( subsection )}"></i>
+                      <a href="#"><i class="${get_subsection_state( subsection )}"></i></a>
                       <span data-tooltip="${_('Drag to reorder')}" class="drag-handle subsection-drag-handle"></span>
                     </div>
                   </div>

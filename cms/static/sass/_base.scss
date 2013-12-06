@@ -854,6 +854,20 @@ body.js {
   }
 }
 
+.section-privacy {
+  position: relative;
+  top: -2px;
+}
+.units-all-private {
+  color: #dd0000;
+}
+.units-mixed-state {
+  color: #999900;
+}
+.units-all-public {
+  color: #00dd00;
+}
+
 // ====================
 
 // works in progress & testing

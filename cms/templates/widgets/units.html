@@ -38,10 +38,11 @@ This def will enumerate through a passed in subsection and list all of the units
       </a>
       % if actions:
       <div class="item-actions">
-	<a href="#" data-tooltip="Delete this unit" class="delete-button" data-locator="${unit_locator}">
-        <span class="delete-icon"></span></a>
+        <a href="#" data-tooltip="Delete this unit" class="delete-button" data-locator="${unit_locator}">
+            <span class="delete-icon"></span>
+        </a>
 	    <span data-tooltip="Drag to sort" class="drag-handle unit-drag-handle"></span>
-        <span class="${get_unit_state_icon_name( unit )}" ></span>
+        <a href=""><i class="${get_unit_state_icon_name( unit )}" ></i></a>
       </div>
       % endif
     </div>

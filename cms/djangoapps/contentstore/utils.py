@@ -21,9 +21,9 @@ from xmodule.modulestore.draft import DIRECT_ONLY_CATEGORIES
 
 unit_stateById = {}              # dictionary of unit states: key=ID, value=stateString
 
-MIXED_STATE_ICON_STRING = "icon-adjust icon-units-mixed-state"
-ALL_PUBLIC_ICON_STRING = "icon-circle-blank icon-units-all-public"
-ALL_PRIVATE_ICON_STRING = "icon-circle icon-units-all-private"
+MIXED_STATE_ICON_STRING = "icon-adjust units-mixed-state"
+ALL_PUBLIC_ICON_STRING = "icon-circle-blank units-all-public"
+ALL_PRIVATE_ICON_STRING = "icon-circle units-all-private"
 NO_UNITS_ICON_STRING = ""
 
 log = logging.getLogger(__name__)
@@ -354,4 +354,4 @@ def catalog_unit_states( section ):
     if found_public == 0:
         return_string = ALL_PRIVATE_ICON_STRING
 
-    return return_string
+    return return_string + ' section-privacy'
