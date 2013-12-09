@@ -298,8 +298,8 @@ class CourseLocator(Locator):
         self._set_value(
             parse, 'version_guid', lambda (new_guid): self.set_version_guid(self.as_object_id(new_guid))
         )
-        self._set_value(parse, 'course_id', lambda (new_id): self.set_course_id(new_id))
-        self._set_value(parse, 'branch', lambda (new_branch): self.set_branch(new_branch))
+        self._set_value(parse, 'course_id', self.set_course_id)
+        self._set_value(parse, 'branch', self.set_branch)
 
     def init_from_version_guid(self, version_guid):
         """
@@ -476,7 +476,7 @@ class BlockUsageLocator(CourseLocator):
         parse = parse_url(value, tag_optional=True)
         if parse is None:
             raise ValueError('Could not parse "%s" as a url' % value)
-        self._set_value(parse, 'block', lambda(new_block): self.set_usage_id(new_block))
+        self._set_value(parse, 'block', self.set_usage_id)
 
     def init_block_ref_from_course_id(self, course_id):
         if isinstance(course_id, CourseLocator):
@@ -486,7 +486,7 @@ class BlockUsageLocator(CourseLocator):
         parse = parse_course_id(course_id)
         if parse is None:
             raise ValueError('Could not parse "%s" as a course_id' % course_id)
-        self._set_value(parse, 'block', lambda(new_block): self.set_usage_id(new_block))
+        self._set_value(parse, 'block', self.set_usage_id)
 
     def __unicode__(self):
         """
