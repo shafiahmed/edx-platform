@@ -191,10 +191,16 @@ require(["domReady!", "jquery", "js/models/location", "js/models/section", "js/v
                     <span class="delete-icon"></span>
                 </a>
 
-                <div style="position: relative;" href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button">
-                    <i class="${catalog_unit_states(section)} "></i>
-                    <div style="position: absolute; width: 250px; height: 100px; right: 0; background-color: #ddd;"><input type="button" /><input type="button" /><input type="button" /></div>
-                </div>
+                <a href="#">
+                    <i class="${catalog_unit_states(section)}    change-unit-status-section-button"    ></i>
+                </a>
+
+
+
+                <!--<div style="position: relative;" href="#" data-tooltip="${_('Delete this section')}" class="delete-button delete-section-button">-->
+                    <!--<i class="${catalog_unit_states(section)} "></i>-->
+                    <!--<div style="position: absolute; width: 250px; height: 100px; right: 0; background-color: #ddd;"><input type="button" /><input type="button" /><input type="button" /></div>-->
+                <!--</div>-->
 
                 <span data-tooltip="${_('Drag to reorder')}" class="drag-handle section-drag-handle"></span>
 

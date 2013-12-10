@@ -97,6 +97,7 @@ domReady(function() {
     $('.remove-date').bind('click', removeDateSetter);
 
     $('.delete-section-button').bind('click', deleteSection);
+    $('.change-unit-status-section-button').bind('click', changeUnitStatusSection);
     $('.delete-subsection-button').bind('click', deleteSubsection);
 
     $('.sync-date').bind('click', syncReleaseDate);
@@ -254,6 +255,11 @@ function deleteSubsection(e) {
 function deleteSection(e) {
     e.preventDefault();
     _deleteItem($(this).parents('section.branch'), 'Section');
+}
+
+function changeUnitStatusSection(e) {
+    e.preventDefault();
+    _deleteItem($(this).parents('section.branch'), 'TRBMchangeUnitStatus');
 }
 
 function _deleteItem($el, type) {
