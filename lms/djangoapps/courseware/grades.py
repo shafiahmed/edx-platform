@@ -15,12 +15,14 @@ from dogapi import dog_stats_api
 
 from courseware import courses
 from courseware.model_data import FieldDataCache
+from student.models import CourseEnrollment
 from xblock.fields import Scope
 from xmodule import graders
-from xmodule.capa_module import CapaModule
 from xmodule.graders import Score
 from .models import StudentModule
 from .module_render import get_module, get_module_for_descriptor
+
+import pdb
 
 log = logging.getLogger("edx.courseware")
 
@@ -74,7 +76,6 @@ def yield_problems(request, course, student):
     sections_to_list = []
     for _, sections in grading_context['graded_sections'].iteritems():
         for section in sections:
-
             section_descriptor = section['section_descriptor']
 
             # If the student hasn't seen a single problem in the section, skip it.
@@ -96,8 +97,13 @@ def yield_problems(request, course, student):
             continue
 
         for problem in yield_module_descendents(section_module):
-            if isinstance(problem, CapaModule):
+            if problem.category == "problem":
                 yield problem
+
+            #if hasattr(problem, 'lcp'):
+            #    yield problem
+            #if isinstance(problem, CapaModule):
+            #    yield problem
 
 
 def answer_distributions(request, course):
@@ -111,13 +117,14 @@ def answer_distributions(request, course):
     TODO (vshnayder): this is currently doing a full linear pass through all
     students and all problems.  This will be just a little slow.
     """
-
     counts = defaultdict(lambda: defaultdict(int))
 
-    enrolled_students = User.objects.filter(courseenrollment__course_id=course.id)
+    enrolled_students = CourseEnrollment.users_enrolled_in(course.id)
 
     for student in enrolled_students:
         for capa_module in yield_problems(request, course, student):
+            pdb.set_trace()
+
             for problem_id in capa_module.lcp.student_answers:
                 # Answer can be a list or some other unhashable element.  Convert to string.
                 answer = str(capa_module.lcp.student_answers[problem_id])
