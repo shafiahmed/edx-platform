@@ -10,6 +10,13 @@ function () {
     return function (state) {
         var dfd = $.Deferred();
 
+        if (state.isTouchBasedDevice) {
+            // iOS doesn't support volume change
+            state.el.find('div.volume').remove();
+            dfd.resolve();
+            return dfd.promise();
+        }
+
         state.videoVolumeControl = {};
 
         _makeFunctionsPublic(state);

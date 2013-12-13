@@ -221,7 +221,7 @@ function () {
                 _this.videoCaption.start = captions.start;
                 _this.videoCaption.loaded = true;
 
-                if (onTouchBasedDevice()) {
+                if (_this.isTouchBasedDevice) {
                     _this.videoCaption.subtitlesEl.find('li').html(
                         gettext(
                             'Caption will be displayed when ' +
@@ -231,6 +231,8 @@ function () {
                 } else {
                     _this.videoCaption.renderCaption();
                 }
+
+                _this.videoCaption.bindHandlers();
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('[Video info]: ERROR while fetching captions.');
@@ -376,8 +378,6 @@ function () {
         }
 
         this.videoCaption.hideCaptions(this.hide_captions);
-
-        this.videoCaption.bindHandlers();
 
         $.each(this.videoCaption.captions, function(index, text) {
             var liEl = $('<li>');

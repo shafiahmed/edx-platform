@@ -219,35 +219,41 @@ function () {
             // Attach a 'click' event on the <video> element. It will cause the
             // video to pause/play.
             this.videoEl.on('click', function (event) {
-                if (_this.playerState === HTML5Video.PlayerState.PAUSED) {
-                    _this.playVideo();
-                    _this.playerState = HTML5Video.PlayerState.PLAYING;
-                    _this.callStateChangeCallback();
-                } else if (
-                    _this.playerState === HTML5Video.PlayerState.PLAYING
-                ) {
+                var PlayerState = HTML5Video.PlayerState;
+
+                if (_this.playerState === PlayerState.PLAYING) {
                     _this.pauseVideo();
-                    _this.playerState = HTML5Video.PlayerState.PAUSED;
+                    _this.playerState = PlayerState.PAUSED;
+                    _this.callStateChangeCallback();
+                } else {
+                    _this.playVideo();
+                    _this.playerState = PlayerState.PLAYING;
                     _this.callStateChangeCallback();
                 }
+            });
+
+            var events = ['loadstart', 'progress', 'suspend', 'abort', 'error',
+                'emptied', 'stalled', 'play', 'pause', 'loadedmetadata',
+                'loadeddata', 'waiting', 'playing', 'canplay', 'canplaythrough',
+                'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange',
+                'durationchange', 'volumechange'
+            ];
+
+            $.each(events, function(index, eventName) {
+                _this.video.addEventListener(eventName, function () {
+                    console.table([
+                        { eventName: eventName, playerState: _this.playerState }
+                    ]);
+                    console.log(eventName, _this.playerState);
+
+                    el.trigger(eventName, arguments);
+                });
             });
 
             // When the <video> tag has been processed by the browser, and it
             // is ready for playback, notify other parts of the VideoPlayer,
             // and initially pause the video.
-            this.video.addEventListener('canplay', function () {
-                // Because Firefox triggers 'canplay' event every time when
-                // 'currentTime' property changes, we must make sure that this
-                // block of code runs only once. Otherwise, this will be an
-                // endless loop ('currentTime' property is changed below).
-                //
-                // Chrome is immune to this behavior.
-                if (_this.playerState !== HTML5Video.PlayerState.UNSTARTED) {
-                    return;
-                }
-
-                _this.playerState = HTML5Video.PlayerState.PAUSED;
-
+            this.video.addEventListener('loadedmetadata', function () {
                 if ($.isFunction(_this.config.events.onReady)) {
                     _this.config.events.onReady(null);
                 }

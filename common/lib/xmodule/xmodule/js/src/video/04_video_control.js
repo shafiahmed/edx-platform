@@ -59,12 +59,7 @@ function () {
         state.videoControl.vidTimeEl           = state.videoControl.el.find('.vidtime');
 
         state.videoControl.fullScreenState = false;
-
-        if (!onTouchBasedDevice()) {
-            state.videoControl.pause();
-        } else {
-            state.videoControl.play();
-        }
+        state.videoControl.pause();
 
         if ((state.videoType === 'html5') && (state.config.autohideHtml5)) {
             state.videoControl.fadeOutTimeout = state.config.fadeOutTimeout;

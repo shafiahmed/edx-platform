@@ -299,11 +299,16 @@ function (VideoPlayer) {
         // element has a CSS class 'fullscreen'.
         this.__dfd__ = $.Deferred();
         this.isFullScreen = false;
+        this.isTouchBasedDevice = Boolean(onTouchBasedDevice());
 
         // The parent element of the video, and the ID.
         this.el = $(element).find('.video');
         this.elVideoWrapper = this.el.find('.video-wrapper');
         this.id = this.el.attr('id').replace(/video_/, '');
+
+        if (this.isTouchBasedDevice) {
+            this.el.addClass('is-touch');
+        }
 
         // jQuery .data() return object with keys in lower camelCase format.
         data = this.el.data();

@@ -124,6 +124,16 @@ function (HTML5Video, Resizer) {
                     onStateChange: state.videoPlayer.onStateChange
                 }
             });
+
+            player = state.videoEl = state.videoPlayer.player.videoEl;
+
+            player[0].addEventListener('loadedmetadata', function () {
+                var videoWidth = player[0].videoWidth || player.width(),
+                    videoHeight = player[0].videoHeight || player.height();
+
+                _resize(state, videoWidth, videoHeight);
+            }, false);
+
         } else { // if (state.videoType === 'youtube') {
             if (state.currentPlayerMode === 'flash') {
                 youTubeId = state.youtubeId();
@@ -146,6 +156,10 @@ function (HTML5Video, Resizer) {
 
             _resize(state, videoWidth, videoHeight);
         }
+
+        if (state.isTouchBasedDevice) {
+            dfd.resolve();
+        }
     }
 
     function _resize (state, videoWidth, videoHeight) {
@@ -154,10 +168,10 @@ function (HTML5Video, Resizer) {
                 elementRatio: videoWidth/videoHeight,
                 container: state.videoEl.parent()
             })
-            .setMode('width')
             .callbacks.once(function() {
                 state.trigger('videoCaption.resize', null);
-            });
+            })
+            .setMode('width');
 
         $(window).bind('resize', _.debounce(state.resizer.align, 100));
     }
@@ -229,7 +243,7 @@ function (HTML5Video, Resizer) {
             // video. `endTime` will be set to `null`, and this if statement
             // will not be executed on next runs.
             if (
-                this.videoPlayer.endTime != null &&
+                this.videoPlayer.endTime !== null &&
                 this.videoPlayer.endTime <= this.videoPlayer.currentTime
             ) {
                 this.videoPlayer.pause();
@@ -432,18 +446,13 @@ function (HTML5Video, Resizer) {
     }
 
     function onReady() {
-        var availablePlaybackRates, baseSpeedSubs, _this,
+        var _this = this,
+            availablePlaybackRates, baseSpeedSubs,
             player, videoWidth, videoHeight;
 
         dfd.resolve();
 
-        if (this.videoType === 'html5') {
-            player = this.videoEl = this.videoPlayer.player.videoEl;
-            videoWidth = player[0].videoWidth || player.width();
-            videoHeight = player[0].videoHeight || player.height();
-
-            _resize(this, videoWidth, videoHeight);
-        }
+        this.videoProgressSlider.slider.slider('option', 'disabled', false);
 
         this.videoPlayer.log('load_video');
 
@@ -469,7 +478,7 @@ function (HTML5Video, Resizer) {
             this.currentPlayerMode === 'html5' &&
             this.videoType === 'youtube'
         ) {
-            if (availablePlaybackRates.length === 1) {
+            if (availablePlaybackRates.length === 1 && !this.isTouchBasedDevice) {
                 // This condition is needed in cases when Firefox version is
                 // less than 20. In those versions HTML5 playback could only
                 // happen at 1 speed (no speed changing). Therefore, in this
@@ -486,7 +495,6 @@ function (HTML5Video, Resizer) {
                 // that the user specified.
 
                 baseSpeedSubs = this.videos['1.0'];
-                _this = this;
                 // this.videos is a dictionary containing various frame rates
                 // and their associated subs.
 
@@ -523,7 +531,7 @@ function (HTML5Video, Resizer) {
         /* The following has been commented out to make sure autoplay is
            disabled for students.
         if (
-            !onTouchBasedDevice() &&
+            !this.isTouchBasedDevice &&
             $('.video:first').data('autoplay') === 'True'
         ) {
             this.videoPlayer.play();
