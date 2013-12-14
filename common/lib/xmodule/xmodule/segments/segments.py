@@ -1,13 +1,3 @@
-"""
-This module contains classes that represent segmentations of groups users.  This
-is used e.g. for experiments that show different things to different students.
-
-These classes are intended to be "simple" objects that are easily serializable to
-json, so that they can be passed accross the network if needed.
-"""
-
-import json
-
 
 class Group(object):
     """

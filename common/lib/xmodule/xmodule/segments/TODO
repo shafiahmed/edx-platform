@@ -1,0 +1,26 @@
+This should really be in a separate lib, but putting this stuff be  in common/lib/segments doesn't work even if I add it to sys.path in lms/envs/common.py:
+
+$ rake lms
+Node requirements unchanged, nothing to install
+Ruby requirements unchanged, nothing to install
+Python requirements unchanged, nothing to install
+xmodule_assets common/static/xmodule
+./manage.py lms --settings dev preprocess_assets --traceback 
+Traceback (most recent call last):
+  File "/Users/victor/mitx_all/python/bin/xmodule_assets", line 9, in <module>
+    load_entry_point('XModule==0.1', 'console_scripts', 'xmodule_assets')()
+  File "/Users/victor/mitx_all/edx-platform/common/lib/xmodule/xmodule/static_content.py", line 190, in main
+    write_descriptor_js(root / 'descriptors/js')
+  File "/Users/victor/mitx_all/edx-platform/common/lib/xmodule/xmodule/static_content.py", line 39, in write_descriptor_js
+    return _write_js(output_root, _list_descriptors())
+  File "/Users/victor/mitx_all/edx-platform/common/lib/xmodule/xmodule/static_content.py", line 46, in _list_descriptors
+    desc for (_, desc) in XModuleDescriptor.load_classes()
+  File "/Users/victor/mitx_all/python/src/xblock/xblock/plugin.py", line 125, in load_classes
+    yield (class_.name, cls._load_class_entry_point(class_))
+  File "/Users/victor/mitx_all/python/src/xblock/xblock/plugin.py", line 60, in _load_class_entry_point
+    class_ = entry_point.load()
+  File "/Users/victor/mitx_all/python/lib/python2.7/site-packages/pkg_resources.py", line 2017, in load
+    entry = __import__(self.module_name, globals(),globals(), ['__name__'])
+  File "/Users/victor/mitx_all/edx-platform/common/lib/xmodule/xmodule/course_module.py", line 11, in <module>
+    from segments.segments import UserSegmentation, Group
+ImportError: No module named segments.segments

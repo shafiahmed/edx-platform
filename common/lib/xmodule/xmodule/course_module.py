@@ -8,7 +8,7 @@ from datetime import datetime
 import dateutil.parser
 from lazy import lazy
 
-from segments import UserSegmentation, Group
+from xmodule.segments.segments import UserSegmentation, Group
 from xmodule.modulestore import Location
 from xmodule.seq_module import SequenceDescriptor, SequenceModule
 from xmodule.graders import grader_from_conf

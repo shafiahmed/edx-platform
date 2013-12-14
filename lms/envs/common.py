@@ -1003,7 +1003,10 @@ INSTALLED_APPS = (
     # Student Identity Verification
     'verify_student',
 
-    # Student experiments
+    # Segmenting users into groups in various ways
+    'course_user_segmentation',
+    
+    # content split tests, and later other experiments 
     'experiment'
 )
 
