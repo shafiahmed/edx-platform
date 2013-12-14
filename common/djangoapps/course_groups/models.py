@@ -13,11 +13,11 @@ class CourseUserGroup(models.Model):
     course, and cohorts are used to split up the forums by group.
     """
     class Meta:
-        unique_together = (('name', 'course_id'), )
+        unique_together = (('name', 'course_id', 'group_type'), )
 
     name = models.CharField(max_length=255,
                             help_text=("What is the name of this group?  "
-                                       "Must be unique within a course."))
+                                       "Must be unique within a course and type."))
     users = models.ManyToManyField(User, db_index=True, related_name='course_groups',
                                    help_text="Who is in this group?")
 
