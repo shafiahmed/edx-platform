@@ -135,11 +135,11 @@ class LmsExperimentSupport(object):
     Another runtime mixin that provides support for saving student's state for
     experiments.
     """
-    def get_condition_for_user(self, experiment_id):
+    def get_condition_for_user(self, user_segmentation_id):
         # TODO: why why why is this the way to get to a user?
         #import pudb; pudb.set_trace()
         real_user = self.get_real_user(self.anonymous_student_id)
-        return experiment.get_condition_for_user(self.course_id, experiment_id,
+        return experiment.get_condition_for_user(self.course_id, user_segmentation_id,
                                                  real_user.id)
 
 class LmsModuleSystem(LmsHandlerUrls, LmsExperimentSupport, ModuleSystem):  # pylint: disable=abstract-method

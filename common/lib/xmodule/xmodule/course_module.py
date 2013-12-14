@@ -8,6 +8,7 @@ from datetime import datetime
 import dateutil.parser
 from lazy import lazy
 
+from segments import UserSegmentation, Group
 from xmodule.modulestore import Location
 from xmodule.seq_module import SequenceDescriptor, SequenceModule
 from xmodule.graders import grader_from_conf
@@ -157,39 +158,25 @@ class TextbookList(List):
         return json_data
 
 
-class ExperimentsList(List):
+class UserSegmentationList(List):
     def from_json(self, values):
-        experiments = []
-        for id, name, description, conditions in values:
-            experiment = Experiment(id, name,
-                                    description, conditions)
-            experiments.append(experiment)
-
-        return experiments
+        return [UserSegmentation.from_json(v) for v in values]
 
     def to_json(self, values):
-        json_data = []
-        for val in values:
-            if isinstance(val, Experiment):
-                json_data.append((val.id, val.name,
-                                  val.description,
-                                  val.conditions))
-            elif isinstance(val, tuple):
-                # TODO: figure out the contract for to_json
-                # document it somewhere
-                # and make this function do the right thing
-                json_data.append(val)
-            else:
-                continue
-        return json_data
+        return [course_user_segmentation.to_json()
+                for course_user_segmentation in values]
 
-    # TODO: actually add an ExperimentsList to a course, and figure out how to
-    # configure it via xml
 
 class CourseFields(object):
     lti_passports = List(help="LTI tools passports as id:client_key:client_secret", scope=Scope.settings)
     textbooks = TextbookList(help="List of pairs of (title, url) for textbooks used in this course",
                              default=[], scope=Scope.content)
+
+    # not meant for direct access via settings.  Meant to code to mess with.
+    user_segmentations = UserSegmentationList(
+        help="List of segmentations of this course into groups",
+        default=[], scope=Scope.content)
+
     wiki_slug = String(help="Slug that points to the wiki for this course", scope=Scope.content)
     enrollment_start = Date(help="Date that enrollment for this class is opened", scope=Scope.settings)
     enrollment_end = Date(help="Date that enrollment for this class is closed", scope=Scope.settings)

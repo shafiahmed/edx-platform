@@ -13,8 +13,8 @@ log = logging.getLogger('edx.' + __name__)
 
 
 class SplitTestFields(object):
-    experiment_id = Integer(help="Which experiment is used",
-                            scope=Scope.content)
+    user_segmentation_id = Integer(help="Which experiment's user segmentation is used",
+                                   scope=Scope.content)
 
     # condition_id is an int
     # child is a serialized UsageId (aka Location).  This child
@@ -25,7 +25,7 @@ class SplitTestFields(object):
     # TODO: is there a way to add some validation around this, to
     # be run on course load or in studio or ....
 
-    condition_id_to_child = Dict(help="Which child module students in a particular condition_id should see",
+    group_id_to_child = Dict(help="Which child module students in a particular condition_id should see",
                                  scope=Scope.content)
 
 
@@ -33,6 +33,10 @@ class SplitTestModule(SplitTestFields, XModule):
     """
     Show the user the appropriate child.  Uses the ExperimentState
     API to figure out which child to show.
+
+    Course staff still get put in an experimental condition, but have the option
+    to see the other conditions.  The only thing that counts toward their
+    grade/progress is the condition they are actually in.
 
     Technical notes:
       - There is more dark magic in this code than I'd like.  The whole varying-children +
@@ -45,17 +49,17 @@ class SplitTestModule(SplitTestFields, XModule):
         # TODO: add code to runtime to call Experiments API with
         # the current user_id
         #import pudb; pudb.set_trace()
-        condition_id = self.runtime.get_condition_for_user(self.experiment_id)
+        group_id = self.runtime.get_condition_for_user(self.user_segmentation_id)
 
-        # condition_id_to_child comes from json, so it has to have string keys
-        str_condition_id = str(condition_id)
-        if str_condition_id in self.condition_id_to_child:
-            child_location = self.condition_id_to_child[str_condition_id]
+        # group_id_to_child comes from json, so it has to have string keys
+        str_group_id = str(group_id)
+        if str_group_id in self.group_id_to_child:
+            child_location = self.group_id_to_child[str_group_id]
             self.child_descriptor = self.get_child_descriptor_by_location(child_location)
         else:
             # Oops.  Config error.
             # TODO: better error message
-            log.debug("split test config error: invalid condition_id.  Showing error")
+            log.debug("split test config error: invalid group_id.  Showing error")
             self.child_descriptor = None
 
         if self.child_descriptor is not None:
@@ -96,12 +100,73 @@ class SplitTestModule(SplitTestFields, XModule):
         return [self.child_descriptor]
 
 
+    def _actually_get_all_children(self):
+        """
+        Actually get all the child blocks of this block, instead of
+        get_children(), which will only get the ones we want to expose to
+        progress/grading/etc for this user.  Used to show staff all the options
+        of a split test, even while they are technically only in one of the
+        buckets.
+
+        (Aside: this feels like too much magic)
+        """
+        # Note: this deliberately uses system.get_module() because we're using
+        # XModule children for now (also see comment in
+        # x_module.py:get_children())
+        return [self.system.get_module(descriptor)
+                for descriptor in self.descriptor.get_children()]
+
+
+    def _get_experiment_definition():
+        """
+        TODO: what interface should this actually use?
+        """
+
+    def _staff_view(self, context):
+        """
+        Render the staff view for a split test module.
+        """
+        # TODO (architectural): To give children proper context (e.g. which
+        # conditions are which), this block will need access to the actual
+        # UserSegmentation definition, not just the user's condition.
+        #
+        # This seems to require either:
+        # a way to get to the Course object, or exposing the UserSegmentationList
+        # in the runtime.
+        fragment = Fragment()
+        contents = []
+
+        for child in self._actually_get_all_children():
+            rendered_child = child.render('student_view', context)
+            fragment.add_frag_resources(rendered_child)
+
+            contents.append({
+                'id': child.id,
+                'content': rendered_child.content
+                })
+
+        # Use the existing vertical template for now.
+        # TODO: replace this with a dropdown, defaulting to user's condition
+        fragment.add_content(self.system.render_template('vert_module.html', {
+            'items': contents
+            }))
+        return fragment
+
+
     def student_view(self, context):
+        """
+        Render the contents of the chosen condition for students, and all the
+        conditions for staff.
+        """
         if self.child is None:
             # raise error instead?  In fact, could complain on descriptor load...
             return Fragment(content=u"<div>Nothing here.  Move along.</div>")
 
-        return self.child.render('student_view', context)
+        if self.system.user_is_staff:
+            return self._staff_view(context)
+        else:
+            return self.child.render('student_view', context)
+
 
     def get_icon_class(self):
         return self.child.get_icon_class() if self.child else 'other'
@@ -121,6 +186,7 @@ class SplitTestDescriptor(SplitTestFields, SequenceDescriptor):
             xml_object.append(
                 etree.fromstring(child.export_to_xml(resource_fs)))
         return xml_object
+
 
     def has_dynamic_children(self):
         """
