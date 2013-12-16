@@ -196,7 +196,7 @@ function () {
             .addClass('pause')
             .attr('title', gettext('Pause'));
 
-        if (this.isTouch === 'iPad') {
+        if (this.isTouch === 'iPad' && this.videoType === 'html5') {
             this.videoControl.hidePlayPlaceholder();
         }
     }
@@ -208,7 +208,7 @@ function () {
             .addClass('play')
             .attr('title', gettext('Play'));
 
-        if (this.isTouch === 'iPad') {
+        if (this.isTouch === 'iPad' && this.videoType === 'html5') {
             this.videoControl.showPlayPlaceholder();
         }
     }
