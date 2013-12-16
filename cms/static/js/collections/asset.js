@@ -1,5 +1,5 @@
-define(["backbone", "backbone.paginator", "js/models/asset"], function(Backbone, BackbonePaginator, AssetModel) {
-    var AssetCollection = Backbone.Paginator.requestPager.extend({
+define(["backbone.paginator", "js/models/asset"], function(BackbonePaginator, AssetModel) {
+    var AssetCollection = BackbonePaginator.requestPager.extend({
         model : AssetModel,
         paginator_core: {
             type: 'GET',
@@ -10,7 +10,7 @@ define(["backbone", "backbone.paginator", "js/models/asset"], function(Backbone,
         paginator_ui: {
             firstPage: 0,
             currentPage: 0,
-            perPage: 5
+            perPage: 100
         },
         server_api: {
             'page': function() { return this.currentPage },

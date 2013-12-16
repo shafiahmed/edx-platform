@@ -1,4 +1,4 @@
-define(["backbone"], function(Backbone, AssetView) {
+define(["backbone", "js/views/feedback_alert"], function(Backbone, AlertView) {
 
     var PagingView = Backbone.View.extend({
         // takes a Backbone Paginator as a model
@@ -54,8 +54,10 @@ define(["backbone"], function(Backbone, AssetView) {
         },
 
         showPagingError: function(response) {
-            // TODO how should errors really be shown (andya)
-            window.alert("Error: " + response);
+            AlertView.Error({
+                title: gettext("Unexpected Error"),
+                closeIcon: false
+            });
         }
     });
 

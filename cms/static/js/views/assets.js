@@ -1,5 +1,5 @@
-define(["backbone", "js/views/paging", "js/views/asset", "js/views/paging_header", "js/views/paging_footer"],
-    function(Backbone, PagingView, AssetView, PagingHeader, PagingFooter) {
+define(["js/views/paging", "js/views/asset", "js/views/paging_header", "js/views/paging_footer"],
+    function(PagingView, AssetView, PagingHeader, PagingFooter) {
 
 var AssetsView = PagingView.extend({
     // takes AssetCollection as model
