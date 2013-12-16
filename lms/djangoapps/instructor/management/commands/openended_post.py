@@ -47,6 +47,7 @@ class Command(BaseCommand):
                     print "WARNING: Submission already graded."
                 elif latest_task_state == OpenEndedChild.ASSESSING:
                     latest_answer = latest_task.latest_answer()
+                    print "Sending submission to grader: {0}".format(latest_answer[:100].encode('utf-8'))
                     latest_task.send_to_grader(latest_answer, latest_task.system)
                     print "Successfully sent to grader."
                 else:

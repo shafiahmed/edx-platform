@@ -1,5 +1,7 @@
 from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
-from ...utils import get_descriptor, get_module_for_student, get_enrolled_students
+from courseware.models import StudentModule
+from student.models import anonymous_id_for_user
+from ...utils import get_descriptor, get_module_for_student, get_enrolled_students, create_csv_from_student_anonymous_ids
 from django.core.management.base import BaseCommand
 
 
@@ -40,12 +42,21 @@ class Command(BaseCommand):
             OpenEndedChild.DONE: 0
         }
 
-        for index, student in enumerate(students):
+        student_anonymous_ids = []
+        student_modules = StudentModule.objects.filter(student__in=students)
+        print "Total student modules: {0}".format(students.count())
+        for index, student_module in enumerate(student_modules):
             if index % 100 == 0:
                 print "{0} students processed".format(index)
 
-            module = get_module_for_student(student, course_id, location)
+            module = get_module_for_student(student_module.student, course_id, location)
             latest_task = module._xmodule.child_module.get_current_task()
             stats[latest_task.child_state] += 1
+            if latest_task.child_state == OpenEndedChild.ASSESSING:
+                student_anonymous_ids.append(anonymous_id_for_user(student_module.student, course_id))
+
+        #Create a csv of student anonymous ids.
+        if student_anonymous_ids:
+            create_csv_from_student_anonymous_ids(student_anonymous_ids)
 
         print stats

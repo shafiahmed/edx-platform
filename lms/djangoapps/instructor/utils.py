@@ -94,6 +94,7 @@ def get_users_from_ids(ids):
     ).order_by('username')
     return users
 
+
 def create_list_from_csv(path_to_csv):
     """Read a csv and return items in a list."""
 
@@ -104,6 +105,14 @@ def create_list_from_csv(path_to_csv):
             items.append(row[0])
 
     return items
+
+
+def create_csv_from_student_anonymous_ids(student_anonymous_ids):
+    """Write a csv from student ids list."""
+
+    with open('student_anonymous_ids.csv', 'wb') as csv_file:
+        csv_reader = csv.writer(csv_file)
+        csv_reader.writerows([[sid] for sid in student_anonymous_ids])
 
 
 class DummyRequest(object):
