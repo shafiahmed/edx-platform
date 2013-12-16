@@ -6,33 +6,16 @@
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript
  */    
 
-(function (jsinput, undefined) {
+(function ($, undefined) {
     // Initialize js inputs on current page.
     // N.B.: No library assumptions about the iframe can be made (including,
     // most relevantly, jquery). Keep in mind what happens in which context
     // when modifying this file.
 
-    /*      Check whether there is anything to be done      */
-
     // When all the problems are first loaded, we want to make sure the
     // constructor only runs once for each iframe; but we also want to make
     // sure that if part of the page is reloaded (e.g., a problem is
     // submitted), the constructor is called again.
-
-    if (!jsinput) {
-        jsinput = {
-            runs : 1,
-            arr : [],
-            exists : function(id) {
-                jsinput.arr.filter(function(e, i, a) {
-                    return e.id = id;
-                });
-            }
-        };
-    }
-
-    jsinput.runs++;
-
 
     /*                      Utils                               */
 
@@ -50,33 +33,19 @@
     /*      END     Utils                                   */
 
 
-
-
-    function jsinputConstructor(spec) {
+    function jsinputConstructor(elem) {
         // Define an class that will be instantiated for each jsinput element
         // of the DOM
 
-        // 'that' is the object returned by the constructor. It has a single
-        // public method, "update", which updates the hidden input field.
-        var that = {};
-
         /*                      Private methods                          */
 
-        var sect = $(spec.elem).parent().find('section[class="jsinput"]');
+        var sect = $(elem).parent().find('section[class="jsinput"]');
         var sectAttr = function (e) { return $(sect).attr(e); };
-        var thisIFrame = $(spec.elem).
-                        find('iframe[name^="iframe_"]').
-                        get(0);
-        var cWindow = thisIFrame.contentWindow;
-        var path = thisIFrame.src.substring(0,
-                                            thisIFrame.src.lastIndexOf("/")+1);
+        var iframe = $(elem).find('iframe[name^="iframe_"]').get(0);
+        var cWindow = iframe.contentWindow;
+        var path = iframe.src.substring(0, iframe.src.lastIndexOf("/")+1);
         // Get the hidden input field to pass to customresponse
-        function _inputField() {
-            var parent = $(spec.elem).parent();
-            return parent.find('input[id^="input_"]');
-        }
-        var inputField = _inputField();
-
+        var inputField = $(elem).parent().find('input[id^="input_"]');
         // Get the grade function name
         var getGradeFn = sectAttr("data");
         // Get state getter
@@ -101,7 +70,9 @@
             });
          }   
 
-        // Put the return value of gradeFn in the hidden inputField.
+        /*                       Public methods                     */
+        
+        // Only one public method that updates the hidden input field.
         var update = function (callback) {
             var ans, state, store;
 
@@ -152,27 +123,13 @@
             }
         };
 
-        /*                       Public methods                     */
-
-        that.update = update;
-
-
-
         /*                      Initialization                          */
-
-        jsinput.arr.push(that);
-
-        // Put the update function as the value of the inputField's "waitfor"
-        // attribute so that it is called when the check button is clicked.
-        function bindCheck() {
-            inputField.data('waitfor', that.update);
-            return;
-        }
 
         var gradeFn = getGradeFn;
 
-
-        bindCheck();
+        // Put the update function as the value of the inputField's "waitfor"
+        // attribute so that it is called when the check button is clicked.
+        inputField.data('waitfor', update);
 
         // Check whether application takes in state and there is a saved
         // state to give it. If getStateSetter is specified but calling it
@@ -221,27 +178,25 @@
             }
             whileloop(0);
         }
-
-        return that;
     }
 
-
     function walkDOM() {
-        var newid;
+        var dataProcessed, all;
 
-        // Find all jsinput elements, and create a jsinput object for each one
-        var all = $(document).find('section[class="jsinput"]');
+        // Find all jsinput elements
+        all = $(document).find('section[class="jsinput"]');
 
+        // When a JSInput problem loads, its data-processed attribute is false,
+        // so the jsconstructor will be called for it.
+        // The constructor will not be called again on subsequent reruns of
+        // this file by other JSInput. Only if it is reloaded, either with the
+        // rest of the page or when it is submitted, will this constructor be
+        // called again. 
         all.each(function(index, value) {
-            // Get just the mako variable 'id' from the id attribute
-            newid = $(value).attr("id").replace(/^inputtype_/, "");
-
-
-            if (!jsinput.exists(newid)){
-                var newJsElem = jsinputConstructor({
-                    id: newid,
-                    elem: value,
-                });
+            dataProcessed = ($(value).attr("data-processed") === "true");
+            if (!dataProcessed) {
+                jsinputConstructor(value);
+                $(value).attr("data-processed", 'true');
             }
         });
     }
@@ -254,4 +209,4 @@
         $(document).ready(setTimeout(walkDOM, 300));
     }
 
-})(window.jsinput = window.jsinput || false);
+})(window.jQuery);
