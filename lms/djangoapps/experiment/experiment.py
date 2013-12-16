@@ -81,6 +81,9 @@ def _get_group(course_id, user_segmentation, user_id):
         course_id, user_segmentation, user_id)
 
     if len(group_ids) > 1:
+        # TODO: decide whether this should resolve the issue by taking them
+        # out of all-but-one of the groups, and log a warning, instead of
+        # refusing to proceed.
         raise ValueError(
             "Found more than one experimental group for user_id {0}, user_segmentation_id"
             " {1}, course {2}"
@@ -101,7 +104,7 @@ def _get_group(course_id, user_segmentation, user_id):
     # different process.)
 
     # TODO: emit analytics event!
-    
+
     # otherwise, we need to pick one, save it, then return it
     group = local_random().choice(user_segmentation.groups)
     created = segmentation.save_user_segmentation_group(

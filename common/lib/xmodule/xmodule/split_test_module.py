@@ -46,9 +46,6 @@ class SplitTestModule(SplitTestFields, XModule):
     def __init__(self, *args, **kwargs):
         super(SplitTestFields, self).__init__(*args, **kwargs)
 
-        # TODO: add code to runtime to call Experiments API with
-        # the current user_id
-        #import pudb; pudb.set_trace()
         group_id = self.runtime.get_condition_for_user(self.user_segmentation_id)
 
         # group_id_to_child comes from json, so it has to have string keys
