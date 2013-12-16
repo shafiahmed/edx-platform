@@ -5,6 +5,9 @@ These are notable changes in edx-platform.  This is a rolling list of changes,
 in roughly chronological order, most recent first.  Add your entries at or near
 the top.  Include a label indicating the component affected.
 
+Studio: Enable Terms of Service and Privacy Policy links to be served by
+  an alternate site. STUD-151.
+
 Blades: Fix bug when Image mapping problems are not working for students in IE. BLD-413.
 
 Blades: Add template that displays the most up-to-date features of
