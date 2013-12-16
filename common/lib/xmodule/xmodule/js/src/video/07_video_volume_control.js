@@ -10,7 +10,7 @@ function () {
     return function (state) {
         var dfd = $.Deferred();
 
-        if (state.isTouchBasedDevice) {
+        if (state.isTouch) {
             // iOS doesn't support volume change
             state.el.find('div.volume').remove();
             dfd.resolve();

@@ -157,7 +157,7 @@ function (HTML5Video, Resizer) {
             _resize(state, videoWidth, videoHeight);
         }
 
-        if (state.isTouchBasedDevice) {
+        if (state.isTouch) {
             dfd.resolve();
         }
     }
@@ -262,6 +262,8 @@ function (HTML5Video, Resizer) {
     }
 
     function onSpeedChange(newSpeed, updateCookie) {
+        this.el.trigger('speedchange', arguments);
+
         var time = this.videoPlayer.currentTime,
             methodName, youtubeId;
 
@@ -318,6 +320,8 @@ function (HTML5Video, Resizer) {
     // It is created on a onPlay event. Cleared on a onPause event.
     // Reinitialized on a onSeek event.
     function onSeek(params) {
+        this.el.trigger('seek', arguments);
+
         var duration = this.videoPlayer.duration(),
             newTime = params.time;
 
@@ -360,6 +364,8 @@ function (HTML5Video, Resizer) {
     }
 
     function onEnded() {
+        this.el.trigger('ended', arguments);
+
         var time = this.videoPlayer.duration();
 
         this.trigger('videoControl.pause', null);
@@ -385,6 +391,8 @@ function (HTML5Video, Resizer) {
     }
 
     function onPause() {
+        this.el.trigger('pause', arguments);
+
         this.videoPlayer.log(
             'pause_video',
             {
@@ -403,6 +411,8 @@ function (HTML5Video, Resizer) {
     }
 
     function onPlay() {
+        this.el.trigger('play', arguments);
+
         this.videoPlayer.log(
             'play_video',
             {
@@ -443,6 +453,8 @@ function (HTML5Video, Resizer) {
         quality = this.videoPlayer.player.getPlaybackQuality();
 
         this.trigger('videoQualityControl.onQualityChange', quality);
+
+        this.el.trigger('qualityChange', arguments);
     }
 
     function onReady() {
@@ -452,8 +464,7 @@ function (HTML5Video, Resizer) {
 
         dfd.resolve();
 
-        this.videoProgressSlider.slider.slider('option', 'disabled', false);
-
+        this.el.trigger('ready', arguments);
         this.videoPlayer.log('load_video');
 
         availablePlaybackRates = this.videoPlayer.player
@@ -478,7 +489,7 @@ function (HTML5Video, Resizer) {
             this.currentPlayerMode === 'html5' &&
             this.videoType === 'youtube'
         ) {
-            if (availablePlaybackRates.length === 1 && !this.isTouchBasedDevice) {
+            if (availablePlaybackRates.length === 1 && !this.isTouch) {
                 // This condition is needed in cases when Firefox version is
                 // less than 20. In those versions HTML5 playback could only
                 // happen at 1 speed (no speed changing). Therefore, in this
@@ -531,7 +542,7 @@ function (HTML5Video, Resizer) {
         /* The following has been commented out to make sure autoplay is
            disabled for students.
         if (
-            !this.isTouchBasedDevice &&
+            !this.isTouch &&
             $('.video:first').data('autoplay') === 'True'
         ) {
             this.videoPlayer.play();

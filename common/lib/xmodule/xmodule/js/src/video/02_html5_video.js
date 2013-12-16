@@ -207,6 +207,9 @@ function () {
             // video element via jquery (http://bugs.jquery.com/ticket/9174) we
             // create it using native JS.
             this.video = document.createElement('video');
+            if (onTouchBasedDevice() && onTouchBasedDevice()[0].match(/iP(hone|od)/)) {
+                this.video.controls = true;
+            }
             this.video.innerHTML = _.values(sourceStr).join('');
 
             // Get the jQuery object, and set the player state to UNSTARTED.
@@ -246,7 +249,7 @@ function () {
                     ]);
                     console.log(eventName, _this.playerState);
 
-                    el.trigger(eventName, arguments);
+                    el.trigger('html5:'+eventName, arguments);
                 });
             });
 

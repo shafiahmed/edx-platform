@@ -44,8 +44,29 @@ function (VideoPlayer) {
 
         state.initialize(element)
             .done(function () {
+                // On iPhones and iPods native controls are used.
+                if (state.isTouch && state.isTouch.match(/iP(hone|od)/)) {
+                    state.el
+                        .addClass('is-initialized')
+                        .find('.spinner')
+                        .attr({
+                            'aria-hidden': 'true',
+                            'tabindex': -1
+                        });
+
+                    return false;
+                }
+
                 _initializeModules(state)
                     .done(function () {
+                        if (state.isTouch === 'iPad') {
+                            state.el.on('play', _.once(function() {
+                                state.trigger('videoControl.show', null);
+                            }));
+                        } else {
+                            state.trigger('videoControl.show', null);
+                        }
+
                         state.el
                             .addClass('is-initialized')
                             .find('.spinner')
@@ -242,7 +263,7 @@ function (VideoPlayer) {
         // Possible value are: 'visible', 'hiding', and 'invisible'.
         state.controlState = 'visible';
         state.controlHideTimeout = null;
-        state.captionState = 'visible';
+        state.captionState = 'invisible';
         state.captionHideTimeout = null;
     }
 
@@ -299,14 +320,14 @@ function (VideoPlayer) {
         // element has a CSS class 'fullscreen'.
         this.__dfd__ = $.Deferred();
         this.isFullScreen = false;
-        this.isTouchBasedDevice = Boolean(onTouchBasedDevice());
+        this.isTouch = onTouchBasedDevice() && onTouchBasedDevice()[0];
 
         // The parent element of the video, and the ID.
         this.el = $(element).find('.video');
         this.elVideoWrapper = this.el.find('.video-wrapper');
         this.id = this.el.attr('id').replace(/video_/, '');
 
-        if (this.isTouchBasedDevice) {
+        if (this.isTouch) {
             this.el.addClass('is-touch');
         }
 

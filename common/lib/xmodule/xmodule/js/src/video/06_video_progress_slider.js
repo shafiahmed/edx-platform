@@ -91,8 +91,7 @@ function () {
             .slider({
                 range: 'min',
                 slide: state.videoProgressSlider.onSlide,
-                stop: state.videoProgressSlider.onStop,
-                disabled: true
+                stop: state.videoProgressSlider.onStop
             });
 
         state.videoProgressSlider.sliderProgress = state.videoProgressSlider

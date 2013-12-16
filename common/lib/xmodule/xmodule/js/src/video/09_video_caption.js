@@ -211,6 +211,8 @@ function () {
             return false;
         }
 
+        this.videoCaption.hideCaptions(this.hide_captions);
+
         // Fetch the captions file. If no file was specified, or if an error
         // occurred, then we hide the captions panel, and the "CC" button
         $.ajaxWithPrefix({
@@ -221,7 +223,7 @@ function () {
                 _this.videoCaption.start = captions.start;
                 _this.videoCaption.loaded = true;
 
-                if (_this.isTouchBasedDevice) {
+                if (_this.isTouch) {
                     _this.videoCaption.subtitlesEl.find('li').html(
                         gettext(
                             'Caption will be displayed when ' +
@@ -359,25 +361,14 @@ function () {
 
         this.videoCaption.setSubtitlesHeight();
 
-        if ((this.videoType === 'html5') && (this.config.autohideHtml5)) {
-            this.videoCaption.fadeOutTimeout = this.config.fadeOutTimeout;
+        if (
+            (this.videoType === 'html5') && (this.config.autohideHtml5) ||
+            (!this.config.autohideHtml5)
 
-            this.videoCaption.subtitlesEl.addClass('html5');
-            this.captionHideTimeout = setTimeout(
-                this.videoCaption.autoHideCaptions,
-                this.videoCaption.fadeOutTimeout
-            );
-        } else if (!this.config.autohideHtml5) {
+        ) {
             this.videoCaption.fadeOutTimeout = this.config.fadeOutTimeout;
             this.videoCaption.subtitlesEl.addClass('html5');
-
-            this.captionHideTimeout = setTimeout(
-                this.videoCaption.autoHideCaptions,
-                0
-            );
         }
-
-        this.videoCaption.hideCaptions(this.hide_captions);
 
         $.each(this.videoCaption.captions, function(index, text) {
             var liEl = $('<li>');
