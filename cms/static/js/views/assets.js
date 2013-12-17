@@ -8,8 +8,9 @@ var AssetsView = PagingView.extend({
         PagingView.prototype.initialize.call(this);
         var collection = this.collection;
         this.template = _.template($("#asset-library-tpl").text());
-        this.render();
         this.listenTo(collection, 'destroy', this.handleDestroy);
+        this.render();
+        this.setPage(0);
     },
 
     render: function() {

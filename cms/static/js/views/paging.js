@@ -27,6 +27,7 @@ define(["backbone", "js/views/feedback_alert"], function(Backbone, AlertView) {
         setPage: function(page) {
             var self = this;
             this.collection.goTo(page, {
+                reset: true,
                 error: function(collection, response, options) {
                     self.showPagingError(response);
                 }

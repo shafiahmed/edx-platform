@@ -9,6 +9,7 @@ define(["backbone", "underscore", "gettext"], function(Backbone, _, gettext) {
             collection.bind('add', _.bind(this.render, this));
             collection.bind('remove', _.bind(this.render, this));
             collection.bind('reset', _.bind(this.render, this));
+            this.render();
         },
 
         render: function() {
@@ -29,7 +30,7 @@ define(["backbone", "underscore", "gettext"], function(Backbone, _, gettext) {
                 start = collection.start,
                 count = collection.size(),
                 total = collection.totalCount,
-                fmts = gettext('Showing %{current_span}s%(start)s-%(end)s%{end-span}s out of %{total_span}s%(total)s total%{end-span}s, sorted by %{order_span}s%(sort_order)s%{end-span}s');
+                fmts = gettext('Showing %(current_span)s%(start)s-%(end)s%(end_span)s out of %(total_span)s%(total)s total%(end_span)s, sorted by %(order_span)s%(sort_order)s%(end_span)s');
 
             return '<p>' + interpolate(fmts, {
                     start: start + 1,
