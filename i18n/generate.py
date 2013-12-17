@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
 """
- See https://edx-wiki.atlassian.net/wiki/display/ENG/PO+File+workflow
+See https://edx-wiki.atlassian.net/wiki/display/ENG/PO+File+workflow
 
+This task merges and compiles the human-readable .pofiles on the
+local filesystem into machine-readable .mofiles. This is typically
+necessary as part of the build process since these .mofiles are
+needed by Django when serving the web app.
 
- This task merges and compiles the human-readable .pofiles on the
- local filesystem into machine-readable .mofiles. This is typically
- necessary as part of the build process since these .mofiles are
- needed by Django when serving the web app.
+The configuration file (in edx-platform/conf/locale/config) specifies which
+languages to generate.
 
- The configuration file (in edx-platform/conf/locale/config) specifies which
- languages to generate.
 """
 
 import os, sys, logging

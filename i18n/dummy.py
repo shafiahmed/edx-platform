@@ -34,8 +34,11 @@ TABLE = {'A': u'\xC0',
          'I': U'\xCC',
          'i': u'\xEF',
          'O': u'\xD8',
-         'o': u'\xF6',
-         'u': u'\xFC'
+         'o': u'\xF8',
+         'U': u'\xDB',
+         'u': u'\xFC',
+         'Y': u'\xDD',
+         'y': u'\xFD',
          }
 
 
@@ -54,12 +57,12 @@ LOREM = ' Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed ' \
 PAD_FACTOR = 1.3
 
 
-class Dummy (Converter):
+class Dummy(Converter):
     """
     A string converter that generates dummy strings with fake accents
     and lorem ipsum padding.
-    """
 
+    """
     def convert(self, string):
         result = Converter.convert(self, string)
         return self.pad(result)
@@ -68,7 +71,6 @@ class Dummy (Converter):
         for (k,v) in TABLE.items():
             string = string.replace(k, v)
         return string
-
 
     def pad(self, string):
         """add some lorem ipsum text to the end of string"""
@@ -88,7 +90,7 @@ class Dummy (Converter):
         Make sure the first msg in msgs has a plural property.
         msgs is list of instances of polib.POEntry
         """
-        if len(msgs)==0:
+        if not msgs:
             return
         headers = msgs[0].get_property('msgstr')
         has_plural = len([header for header in headers if header.find('Plural-Forms:') == 0])>0
@@ -96,7 +98,6 @@ class Dummy (Converter):
             # Apply declaration for English pluralization rules
             plural = "Plural-Forms: nplurals=2; plural=(n != 1);\\n"
             headers.append(plural)
-        
 
     def convert_msg(self, msg):
         """
@@ -104,12 +105,12 @@ class Dummy (Converter):
         msg is an instance of polib.POEntry
         """
         source = msg.msgid
-        if len(source)==0:
+        if not source:
             # don't translate empty string
             return
 
         plural = msg.msgid_plural
-        if len(plural)>0:
+        if len(plural) > 0:
             # translate singular and plural
             foreign_single = self.convert(source)
             foreign_plural = self.convert(plural)

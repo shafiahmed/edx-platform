@@ -27,7 +27,7 @@ def clean_translated_locales():
     for locale in CONFIGURATION.locales:
         if locale != CONFIGURATION.source_locale:
             clean_locale(locale)
-        
+
 def clean_locale(locale):
     """
     Strips out the warning from all of a locale's translated po files
@@ -67,4 +67,3 @@ if __name__ == '__main__':
         pull()
     else:
         raise Exception("unknown argument: (%s)" % arg)
-        
