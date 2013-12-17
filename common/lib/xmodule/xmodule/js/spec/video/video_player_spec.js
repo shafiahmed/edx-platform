@@ -344,7 +344,7 @@
 
                 waitsFor(function () {
                     return videoPlayer.isPlaying();
-                }, 'video begins playing', 10000);
+                }, 'video begins playing', WAIT_TIMEOUT);
             });
 
             it('Slider event causes log update', function () {
@@ -557,7 +557,7 @@
                     duration = Math.round(videoPlayer.currentTime);
 
                     return videoPlayer.pause.calls.length === 1;
-                }, 5000, 'pause() has been called');
+                }, 'pause() has been called', WAIT_TIMEOUT);
 
                 runs(function () {
                     expect(videoPlayer.startTime).toBe(0);
@@ -590,7 +590,7 @@
                     }
 
                     return false;
-                }, 'Video is fully loaded.', 1000);
+                }, 'Video is fully loaded.', WAIT_TIMEOUT);
 
                 runs(function () {
                     var htmlStr;
@@ -619,7 +619,7 @@
             it('update the playback time on caption', function () {
                 waitsFor(function () {
                     return videoPlayer.duration() > 0;
-                }, 'Video is fully loaded.', 1000);
+                }, 'Video is fully loaded.', WAIT_TIMEOUT);
 
                 runs(function () {
                     videoPlayer.updatePlayTime(60);
@@ -636,7 +636,7 @@
                     duration = videoPlayer.duration();
 
                     return duration > 0;
-                }, 'Video is fully loaded.', 1000);
+                }, 'Video is fully loaded.', WAIT_TIMEOUT);
 
                 runs(function () {
                     videoPlayer.updatePlayTime(60);
@@ -676,7 +676,7 @@
 
                     return videoPlayer.isPlaying() &&
                         videoPlayer.initialSeekToStartTime === false;
-                }, 'duration becomes available', 1000);
+                }, 'duration becomes available', WAIT_TIMEOUT);
 
                 runs(function () {
                     expect(videoPlayer.startTime).toBe(START_TIME);
@@ -708,7 +708,7 @@
                 waitsFor(function () {
                     return videoPlayer.isPlaying() &&
                         videoPlayer.initialSeekToStartTime === false;
-                }, 'updatePlayTime was invoked and duration is set', 5000);
+                }, 'updatePlayTime was invoked and duration is set', WAIT_TIMEOUT);
 
                 runs(function () {
                     expect(videoPlayer.endTime).toBe(null);
@@ -874,6 +874,54 @@
                 realValue = Math.round(player.getVolume()*100);
 
                 expect(realValue).toEqual(expectedValue);
+            });
+        });
+
+        describe('on Touch devices', function () {
+            it('`is-touch` class name is added to container', function () {
+                window.onTouchBasedDevice.andReturn(['iPad']);
+                initialize();
+
+                expect(state.el).toHaveClass('is-touch');
+            });
+
+            it('modules are not initialized on iPhone', function () {
+                window.onTouchBasedDevice.andReturn(['iPhone']);
+                initialize();
+
+                var modules = [
+                    videoControl, videoCaption, videoProgressSlider,
+                    videoSpeedControl, videoVolumeControl
+                ];
+
+                $.each(modules, function (index, module) {
+                    expect(module).toBeUndefined();
+                });
+            });
+
+            it('controls becomes visible after start playing on iPad', function () {
+                window.onTouchBasedDevice.andReturn(['iPad']);
+                initialize();
+
+                var controls = state.el.find('.video-controls');
+
+                waitsFor(function () {
+                    return state.el.hasClass('is-initialized');
+                },'Video is not initialized.' , WAIT_TIMEOUT);
+
+                runs(function () {
+                    expect(controls).toHaveClass('is-hidden');
+                    videoPlayer.play();
+                });
+
+                waitsFor(function () {
+                    return videoPlayer.isPlaying();
+                },'Video does not play.' , WAIT_TIMEOUT);
+
+                runs(function () {
+                    expect(controls).not.toHaveClass('is-hidden');
+                });
+
             });
         });
     });

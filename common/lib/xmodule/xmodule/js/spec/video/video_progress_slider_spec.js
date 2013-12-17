@@ -175,11 +175,7 @@
                 // window.setTimeout() function might (and probably will) fail.
                 oldSetTimeout = window.setTimeout;
                 // Redefine window.setTimeout() function as a spy.
-                window.setTimeout = jasmine.createSpy()
-                    .andCallFake(function (callback, timeout) {
-                        return 5;
-                    });
-                window.setTimeout.andReturn(100);
+                window.setTimeout = jasmine.createSpy().andReturn(100);
 
                 initialize();
                 spyOn(videoPlayer, 'onSlideSeek').andCallThrough();
