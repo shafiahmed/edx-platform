@@ -46,34 +46,25 @@ function (VideoPlayer) {
             .done(function () {
                 // On iPhones and iPods native controls are used.
                 if (/iP(hone|od)/i.test(state.isTouch[0])) {
-                    state.el
-                        .addClass('is-initialized')
-                        .find('.spinner')
-                        .attr({
-                            'aria-hidden': 'true',
-                            'tabindex': -1
-                        });
+                    _hideWaitPlaceholder(state);
 
                     return false;
                 }
 
                 _initializeModules(state)
                     .done(function () {
-                        if (state.isTouch[0] === 'iPad') {
+                        // On iPad ready state occurs just after start playing.
+                        // We hide controls before video starts playing.
+                        if (/iPad/i.test(state.isTouch[0])) {
                             state.el.on('play', _.once(function() {
                                 state.trigger('videoControl.show', null);
                             }));
                         } else {
+                        // On PC show controls immediately.
                             state.trigger('videoControl.show', null);
                         }
 
-                        state.el
-                            .addClass('is-initialized')
-                            .find('.spinner')
-                            .attr({
-                                'aria-hidden': 'true',
-                                'tabindex': -1
-                            });
+                        _hideWaitPlaceholder(state);
                     });
             });
     };
@@ -254,6 +245,16 @@ function (VideoPlayer) {
         state.setSpeed($.cookie('video_speed'));
 
         return true;
+    }
+
+    function _hideWaitPlaceholder(state) {
+        state.el
+            .addClass('is-initialized')
+            .find('.spinner')
+            .attr({
+                'aria-hidden': 'true',
+                'tabindex': -1
+            });
     }
 
     function _setConfigurations(state) {

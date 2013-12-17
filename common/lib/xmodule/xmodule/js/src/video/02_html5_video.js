@@ -90,6 +90,12 @@ function () {
             return [0.75, 1.0, 1.25, 1.5];
         };
 
+        Player.prototype._getLogs = function () {
+            console.table(this.logs);
+
+            return this.logs;
+        };
+
         return Player;
 
         /*
@@ -132,6 +138,7 @@ function () {
             var isTouch = onTouchBasedDevice() || '',
                 sourceStr, _this, errorMessage;
 
+            this.logs = [];
             // Initially we assume that el is a DOM element. If jQuery selector
             // fails to select something, we assume that el is an ID of a DOM
             // element. We try to select by ID. If jQuery fails this time, we
@@ -208,15 +215,16 @@ function () {
             // video element via jquery (http://bugs.jquery.com/ticket/9174) we
             // create it using native JS.
             this.video = document.createElement('video');
-            if (/iP(hone|od)/i.test(isTouch[0])) {
-                this.video.controls = true;
-            }
             this.video.innerHTML = _.values(sourceStr).join('');
 
             // Get the jQuery object, and set the player state to UNSTARTED.
             // The player state is used by other parts of the VideoPlayer to
             // determine what the video is currently doing.
             this.videoEl = $(this.video);
+
+            if (/iP(hone|od)/i.test(isTouch[0])) {
+                this.videoEl.prop('controls', true);
+            }
 
             this.playerState = HTML5Video.PlayerState.UNSTARTED;
 
@@ -245,12 +253,12 @@ function () {
 
             $.each(events, function(index, eventName) {
                 _this.video.addEventListener(eventName, function () {
-                    console.table([
-                        { eventName: eventName, playerState: _this.playerState }
-                    ]);
-                    console.log(eventName, _this.playerState);
+                    _this.logs.push({
+                        'event name': eventName,
+                        'state': _this.playerState
+                    });
 
-                    el.trigger('html5:'+eventName, arguments);
+                    el.trigger('html5:' + eventName, arguments);
                 });
             });
 
@@ -268,6 +276,10 @@ function () {
             this.video.addEventListener('play', function () {
                 _this.playerState = HTML5Video.PlayerState.PLAYING;
                 _this.callStateChangeCallback();
+            }, false);
+
+            this.video.addEventListener('playing', function () {
+                _this.playerState = HTML5Video.PlayerState.PLAYING;
             }, false);
 
             // Register the 'pause' event.
