@@ -57,24 +57,24 @@ class AssetsToyCourseTestCase(CourseTestCase):
         url = location.url_reverse('assets/', '')
 
         resp = self.client.get(url, HTTP_ACCEPT='application/json')
-        jsonResponse = json.loads(resp.content)
-        assets = jsonResponse['assets']
-        self.assertEquals(jsonResponse['start'], 0)
-        self.assertEquals(jsonResponse['totalCount'], 3)
+        json_response = json.loads(resp.content)
+        assets = json_response['assets']
+        self.assertEquals(json_response['start'], 0)
+        self.assertEquals(json_response['totalCount'], 3)
         self.assertEquals(len(assets), 3)
 
         resp = self.client.get(url + "?page_size=2", HTTP_ACCEPT='application/json')
-        jsonResponse = json.loads(resp.content)
-        assets = jsonResponse['assets']
-        self.assertEquals(jsonResponse['start'], 0)
-        self.assertEquals(jsonResponse['totalCount'], 3)
+        json_response = json.loads(resp.content)
+        assets = json_response['assets']
+        self.assertEquals(json_response['start'], 0)
+        self.assertEquals(json_response['totalCount'], 3)
         self.assertEquals(len(assets), 2)
 
         resp = self.client.get(url + "?page_size=2&page=1", HTTP_ACCEPT='application/json')
-        jsonResponse = json.loads(resp.content)
-        assets = jsonResponse['assets']
-        self.assertEquals(jsonResponse['start'], 2)
-        self.assertEquals(jsonResponse['totalCount'], 3)
+        json_response = json.loads(resp.content)
+        assets = json_response['assets']
+        self.assertEquals(json_response['start'], 2)
+        self.assertEquals(json_response['totalCount'], 3)
         self.assertEquals(len(assets), 1)
 
 

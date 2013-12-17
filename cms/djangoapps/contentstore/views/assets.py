@@ -1,5 +1,4 @@
 import logging
-import math
 from functools import partial
 
 from django.http import HttpResponseBadRequest
@@ -56,8 +55,8 @@ def assets_handler(request, tag=None, course_id=None, branch=None, version_guid=
     if not has_access(request.user, location):
         raise PermissionDenied()
 
-    format = request.REQUEST.get('format', 'html')
-    if format == 'json' or 'application/json' in request.META.get('HTTP_ACCEPT', 'application/json'):
+    response_format = request.REQUEST.get('format', 'html')
+    if response_format == 'json' or 'application/json' in request.META.get('HTTP_ACCEPT', 'application/json'):
         if request.method == 'GET':
             return _assets_json(request, location)
         else:
@@ -122,7 +121,7 @@ def _assets_json(request, location):
     total_count = len(assets)
     settings = _paging_settings(request, total_count)
 
-    assets = assets[settings['start'] : settings['end']]
+    assets = assets[settings['start']: settings['end']]
 
     asset_json = []
     for asset in assets:
