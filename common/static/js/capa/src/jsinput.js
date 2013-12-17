@@ -6,7 +6,7 @@
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript
  */    
 
-(function ($, undefined) {
+var JSInput = (function ($, undefined) {
     // Initialize js inputs on current page.
     // N.B.: No library assumptions about the iframe can be made (including,
     // most relevantly, jquery). Keep in mind what happens in which context
@@ -209,4 +209,9 @@
         $(document).ready(setTimeout(walkDOM, 300));
     }
 
+    return {
+        jsinputConstructor: jsinputConstructor,
+        walkDOM: walkDOM
+    };
+    
 })(window.jQuery);
