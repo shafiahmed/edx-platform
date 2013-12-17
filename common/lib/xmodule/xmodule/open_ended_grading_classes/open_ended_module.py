@@ -264,6 +264,12 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
             body=json.dumps(contents)
         )
 
+        # State associated with the queueing request
+        queuestate = {
+            'key': queuekey,
+            'time': qtime,
+        }
+
         success = True
         message = "Successfully saved your submission."
         if error:

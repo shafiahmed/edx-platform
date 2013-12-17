@@ -300,7 +300,7 @@ class OpenEndedModuleTest(unittest.TestCase):
             'max_score': self.max_score
         })
         result, __ = self.openendedmodule.send_to_grader(submission, self.test_system)
-        self.assertTrue(True)
+        self.assertTrue(result)
         self.mock_xqueue.send_to_queue.assert_called_with(body=json.dumps(contents), header=ANY)
 
     def update_score_single(self):
