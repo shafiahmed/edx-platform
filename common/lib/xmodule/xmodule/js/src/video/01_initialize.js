@@ -45,7 +45,7 @@ function (VideoPlayer) {
         state.initialize(element)
             .done(function () {
                 // On iPhones and iPods native controls are used.
-                if (state.isTouch && state.isTouch.match(/iP(hone|od)/)) {
+                if (/iP(hone|od)/i.test(state.isTouch[0])) {
                     state.el
                         .addClass('is-initialized')
                         .find('.spinner')
@@ -59,7 +59,7 @@ function (VideoPlayer) {
 
                 _initializeModules(state)
                     .done(function () {
-                        if (state.isTouch === 'iPad') {
+                        if (state.isTouch[0] === 'iPad') {
                             state.el.on('play', _.once(function() {
                                 state.trigger('videoControl.show', null);
                             }));
@@ -320,7 +320,7 @@ function (VideoPlayer) {
         // element has a CSS class 'fullscreen'.
         this.__dfd__ = $.Deferred();
         this.isFullScreen = false;
-        this.isTouch = onTouchBasedDevice() && onTouchBasedDevice()[0];
+        this.isTouch = onTouchBasedDevice() || '';
 
         // The parent element of the video, and the ID.
         this.el = $(element).find('.video');

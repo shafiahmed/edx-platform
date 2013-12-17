@@ -11,7 +11,7 @@
         beforeEach(function () {
             oldOTBD = window.onTouchBasedDevice;
             window.onTouchBasedDevice = jasmine
-                .createSpy('onTouchBasedDevice').andReturn(false);
+                .createSpy('onTouchBasedDevice').andReturn(null);
             initialize();
             player.config.events.onReady = jasmine.createSpy('onReady');
         });
@@ -113,16 +113,6 @@
                     expect(player.video.play).toHaveBeenCalled();
                 });
 
-                it('player state was changed', function () {
-                    waitsFor(function () {
-                        return player.getPlayerState() !== STATUS.PAUSED;
-                    }, 'Player state should be changed', WAIT_TIMEOUT);
-
-                    runs(function () {
-                        expect(player.getPlayerState()).toBe(STATUS.PLAYING);
-                    });
-                });
-
                 it('callback was called', function () {
                     waitsFor(function () {
                         return player.getPlayerState() !== STATUS.PAUSED;
@@ -131,6 +121,27 @@
                     runs(function () {
                         expect(player.callStateChangeCallback)
                             .toHaveBeenCalled();
+                    });
+                });
+            });
+
+            describe('[playing]', function () {
+                beforeEach(function () {
+                    spyOn(player.video, 'play').andCallThrough();
+                    player.playerState = STATUS.PAUSED;
+                    player.playVideo();
+                });
+
+                it('player state was changed', function () {
+                    waitsFor(function () {
+                        var state = player.getPlayerState();
+
+                        return state !== STATUS.BUFFERING &&
+                               state !== STATUS.PAUSED;
+                    }, 'Player state should be changed', WAIT_TIMEOUT);
+
+                    runs(function () {
+                        expect(player.getPlayerState()).toBe(STATUS.PLAYING);
                     });
                 });
             });
@@ -171,7 +182,7 @@
                 });
             });
 
-            describe('[canplay]', function () {
+            describe('[loadedmetadata]', function () {
                 it(
                     'player state was changed, start/end was defined, ' +
                     'onReady called', function ()

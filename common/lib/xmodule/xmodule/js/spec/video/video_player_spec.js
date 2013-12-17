@@ -57,7 +57,7 @@
         beforeEach(function () {
             oldOTBD = window.onTouchBasedDevice;
             window.onTouchBasedDevice = jasmine.createSpy('onTouchBasedDevice')
-                .andReturn(false);
+                .andReturn(null);
         });
 
         afterEach(function () {
@@ -156,19 +156,19 @@
             // available globally. It is defined within the scope of Require
             // JS.
 
-            describe('when not on a touch based device', function () {
+            describe('when on a touch based device', function () {
                 beforeEach(function () {
-                    window.onTouchBasedDevice.andReturn(true);
+                    window.onTouchBasedDevice.andReturn(['iPad']);
                     initialize();
                 });
 
                 it('create video volume control', function () {
-                    expect(videoVolumeControl).toBeDefined();
-                    expect(videoVolumeControl.el).toHaveClass('volume');
+                    expect(videoVolumeControl).toBeUndefined();
+                    expect(state.el.find('div.volume')).not.toExist();
                 });
             });
 
-            describe('when on a touch based device', function () {
+            describe('when not on a touch based device', function () {
                 var oldOTBD;
 
                 beforeEach(function () {
@@ -343,15 +343,7 @@
                 state.videoPlayer.play();
 
                 waitsFor(function () {
-                    var duration = videoPlayer.duration(),
-                        currentTime = videoPlayer.currentTime;
-
-                    return (
-                        isFinite(currentTime) &&
-                        currentTime > 0 &&
-                        isFinite(duration) &&
-                        duration > 0
-                    );
+                    return videoPlayer.isPlaying();
                 }, 'video begins playing', 10000);
             });
 
@@ -555,33 +547,23 @@
             });
 
             it('video is paused on first endTime, start & end time are reset', function () {
-                var checkForStartEndTimeSet = true;
+                var duration;
 
                 videoProgressSlider.notifyThroughHandleEnd.reset();
                 videoPlayer.pause.reset();
                 videoPlayer.play();
 
                 waitsFor(function () {
-                    if (
-                        !isFinite(videoPlayer.currentTime) ||
-                        videoPlayer.currentTime <= 0
-                    ) {
-                        return false;
-                    }
+                    duration = Math.round(videoPlayer.currentTime);
 
-                    if (checkForStartEndTimeSet) {
-                        checkForStartEndTimeSet = false;
-
-                        expect(videoPlayer.startTime).toBe(START_TIME);
-                        expect(videoPlayer.endTime).toBe(END_TIME);
-                    }
-
-                    return videoPlayer.pause.calls.length === 1
+                    return videoPlayer.pause.calls.length === 1;
                 }, 5000, 'pause() has been called');
 
                 runs(function () {
                     expect(videoPlayer.startTime).toBe(0);
                     expect(videoPlayer.endTime).toBe(null);
+
+                    expect(duration).toBe(END_TIME);
 
                     expect(videoProgressSlider.notifyThroughHandleEnd)
                         .toHaveBeenCalledWith({end: true});
@@ -692,7 +674,7 @@
                 waitsFor(function () {
                     duration = videoPlayer.duration();
 
-                    return duration > 0 &&
+                    return videoPlayer.isPlaying() &&
                         videoPlayer.initialSeekToStartTime === false;
                 }, 'duration becomes available', 1000);
 
@@ -724,9 +706,7 @@
                 videoPlayer.play();
 
                 waitsFor(function () {
-                    duration = videoPlayer.duration();
-
-                    return duration > 0 &&
+                    return videoPlayer.isPlaying() &&
                         videoPlayer.initialSeekToStartTime === false;
                 }, 'updatePlayTime was invoked and duration is set', 5000);
 

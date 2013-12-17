@@ -129,7 +129,8 @@ function () {
          *     }
          */
         function Player(el, config) {
-            var sourceStr, _this, errorMessage;
+            var isTouch = onTouchBasedDevice() || '',
+                sourceStr, _this, errorMessage;
 
             // Initially we assume that el is a DOM element. If jQuery selector
             // fails to select something, we assume that el is an ID of a DOM
@@ -207,7 +208,7 @@ function () {
             // video element via jquery (http://bugs.jquery.com/ticket/9174) we
             // create it using native JS.
             this.video = document.createElement('video');
-            if (onTouchBasedDevice() && onTouchBasedDevice()[0].match(/iP(hone|od)/)) {
+            if (/iP(hone|od)/i.test(isTouch[0])) {
                 this.video.controls = true;
             }
             this.video.innerHTML = _.values(sourceStr).join('');
@@ -257,6 +258,7 @@ function () {
             // is ready for playback, notify other parts of the VideoPlayer,
             // and initially pause the video.
             this.video.addEventListener('loadedmetadata', function () {
+                _this.playerState = HTML5Video.PlayerState.PAUSED;
                 if ($.isFunction(_this.config.events.onReady)) {
                     _this.config.events.onReady(null);
                 }

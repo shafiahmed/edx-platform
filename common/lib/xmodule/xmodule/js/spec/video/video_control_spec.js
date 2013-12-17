@@ -10,7 +10,7 @@
 
     beforeEach(function(){
         oldOTBD = window.onTouchBasedDevice;
-        window.onTouchBasedDevice = jasmine.createSpy('onTouchBasedDevice').andReturn(false);
+        window.onTouchBasedDevice = jasmine.createSpy('onTouchBasedDevice').andReturn(null);
     });
 
     afterEach(function() {
@@ -75,13 +75,13 @@
 
       describe('when on a touch based device', function() {
         beforeEach(function() {
-          window.onTouchBasedDevice.andReturn(true);
+          window.onTouchBasedDevice.andReturn(['iPad']);
           initialize();
         });
 
         it('does not add the play class to video control', function() {
-          expect($('.video_control')).not.toHaveClass('play');
-          expect($('.video_control')).not.toHaveAttr('title', 'Play');
+          expect($('.video_control')).toHaveClass('play');
+          expect($('.video_control')).toHaveAttr('title', 'Play');
         });
       });
     });

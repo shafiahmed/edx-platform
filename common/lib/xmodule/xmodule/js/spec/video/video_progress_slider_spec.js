@@ -12,7 +12,7 @@
         beforeEach(function() {
             oldOTBD = window.onTouchBasedDevice;
             window.onTouchBasedDevice = jasmine.createSpy('onTouchBasedDevice')
-                .andReturn(false);
+                .andReturn(null);
         });
 
         afterEach(function() {
@@ -44,17 +44,21 @@
             });
 
             describe('on a touch-based device', function() {
-                beforeEach(function() {
-                    window.onTouchBasedDevice.andReturn(true);
-                    spyOn($.fn, 'slider').andCallThrough();
-                    initialize();
-                });
+                it('does not build the slider on iPhone', function() {
 
-                it('does not build the slider', function() {
-                    expect(videoProgressSlider.slider).toBeUndefined();
+                    window.onTouchBasedDevice.andReturn(['iPhone']);
+                    initialize();
+
+                    expect(videoProgressSlider).toBeUndefined();
 
                     // We can't expect $.fn.slider not to have been called,
                     // because sliders are used in other parts of Video.
+                });
+                it('build the slider on iPad', function() {
+                    window.onTouchBasedDevice.andReturn(['iPad']);
+                    initialize();
+
+                    expect(videoProgressSlider.slider).toBeDefined();
                 });
             });
         });
@@ -131,15 +135,7 @@
                 state.videoPlayer.play();
 
                 waitsFor(function () {
-                    var duration = videoPlayer.duration(),
-                        currentTime = videoPlayer.currentTime;
-
-                    return (
-                        isFinite(currentTime) &&
-                        currentTime > 0 &&
-                        isFinite(duration) &&
-                        duration > 0
-                    );
+                    return videoPlayer.isPlaying();
                 }, 'video begins playing', 10000);
             });
 
@@ -190,15 +186,7 @@
                 videoPlayer.play();
 
                 waitsFor(function () {
-                    var duration = videoPlayer.duration(),
-                        currentTime = videoPlayer.currentTime;
-
-                    return (
-                        isFinite(currentTime) &&
-                        currentTime > 0 &&
-                        isFinite(duration) &&
-                        duration > 0
-                    );
+                    return videoPlayer.isPlaying();
                 }, 'video begins playing', 10000);
             });
 
@@ -317,15 +305,7 @@
                 videoPlayer.play();
 
                 waitsFor(function () {
-                    var duration = videoPlayer.duration(),
-                        currentTime = videoPlayer.currentTime;
-
-                    return (
-                        isFinite(duration) &&
-                        duration > 0 &&
-                        isFinite(currentTime) &&
-                        currentTime > 0
-                    );
+                    return videoPlayer.isPlaying();
                 }, 'duration is set, video is playing', 5000);
 
                 runs(function () {
