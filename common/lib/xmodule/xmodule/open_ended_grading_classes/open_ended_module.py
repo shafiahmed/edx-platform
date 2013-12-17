@@ -259,7 +259,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         })
 
         # Submit request. When successful, 'msg' is the prior length of the queue
-        error, __ = qinterface.send_to_queue(
+        error, error_message = qinterface.send_to_queue(
             header=xheader,
             body=json.dumps(contents)
         )
@@ -275,6 +275,9 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
         if error:
             success = False
             message = 'Unable to send your submission to grader. Please try again later.'
+            log.error("Unable to submit to grader. location: {0}, error_message: {1}".format(
+                self.location_string, error_message
+            ))
 
         return (success, message)
 
@@ -694,7 +697,7 @@ class OpenEndedModule(openendedchild.OpenEndedChild):
 
         return {
             'success': success,
-            'error': error_message,
+            'error': message,
             'student_response': data['student_answer'].replace("\n", "<br/>")
         }
 
