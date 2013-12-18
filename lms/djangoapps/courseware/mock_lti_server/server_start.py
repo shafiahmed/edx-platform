@@ -19,6 +19,7 @@ server.oauth_settings = {
     'lti_endpoint': 'correct_lti_endpoint'
 }
 server.server_host = server_host
+server.server_port = server_port
 
 # If in test mode mock lti server will make callback url using referer host.
 # Used in MockLTIRequestHandler when sending graded result.

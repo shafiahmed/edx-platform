@@ -61,7 +61,7 @@ class MockLTIRequestHandler(BaseHTTPRequestHandler):
         '''
         if 'grade' in self.path and self._send_graded_result().status_code == 200:
             status_message = 'LTI consumer (edX) responded with XML content:<br>' + self.server.grade_data['TC answer']
-            self.server.grade_data['callback_url'] = None
+            self.server.grade_data = None
             self._send_response(status_message, 200)
         # Respond to request with correct lti endpoint:
         elif self._is_correct_lti_request():
@@ -171,7 +171,8 @@ class MockLTIRequestHandler(BaseHTTPRequestHandler):
         response = requests.post(
             url,
             data=data,
-            headers=headers
+            headers=headers,
+            verify=False
         )
         self.server.grade_data['TC answer'] = response.content
         return response
@@ -182,6 +183,10 @@ class MockLTIRequestHandler(BaseHTTPRequestHandler):
         '''
         self._send_head(status_code)
         if getattr(self.server, 'grade_data', False):  # lti can be graded
+            if getattr(self.server, 'test_mode', None):
+                url = "http://{}:{}".format(self.server.server_host, self.server.server_port)
+            else:
+                url = "https://{}".format(self.server.server_host)
             response_str = textwrap.dedent("""
                 <html>
                     <head>
@@ -198,7 +203,7 @@ class MockLTIRequestHandler(BaseHTTPRequestHandler):
                         </form>
                     </body>
                 </html>
-            """).format(message, url="http://%s:%s" % self.server.server_address)
+            """).format(message, url=url)
         else: # lti can't be graded
             response_str = textwrap.dedent("""
                 <html>
