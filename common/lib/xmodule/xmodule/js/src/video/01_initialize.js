@@ -47,6 +47,7 @@ function (VideoPlayer) {
                 // On iPhones and iPods native controls are used.
                 if (/iP(hone|od)/i.test(state.isTouch[0])) {
                     _hideWaitPlaceholder(state);
+                    state.el.trigger('initialize', arguments);
 
                     return false;
                 }
@@ -65,6 +66,7 @@ function (VideoPlayer) {
                         }
 
                         _hideWaitPlaceholder(state);
+                        state.el.trigger('initialize', arguments);
                     });
             });
     };

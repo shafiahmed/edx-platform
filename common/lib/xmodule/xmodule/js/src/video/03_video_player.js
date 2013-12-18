@@ -70,6 +70,7 @@ function (HTML5Video, Resizer) {
             if (state.currentPlayerMode !== 'flash') {
                 state.videoPlayer.onSpeedChange(state.speed);
             }
+            state.el.trigger('ready', arguments);
         });
 
         if (state.videoType === 'youtube') {
@@ -262,8 +263,6 @@ function (HTML5Video, Resizer) {
     }
 
     function onSpeedChange(newSpeed, updateCookie) {
-        this.el.trigger('speedchange', arguments);
-
         var time = this.videoPlayer.currentTime,
             methodName, youtubeId;
 
@@ -313,6 +312,8 @@ function (HTML5Video, Resizer) {
             this.videoPlayer.player[methodName](youtubeId, time);
             this.videoPlayer.updatePlayTime(time);
         }
+
+        this.el.trigger('speedchange', arguments);
     }
 
     // Every 200 ms, if the video is playing, we call the function update, via
@@ -320,8 +321,6 @@ function (HTML5Video, Resizer) {
     // It is created on a onPlay event. Cleared on a onPause event.
     // Reinitialized on a onSeek event.
     function onSeek(params) {
-        this.el.trigger('seek', arguments);
-
         var duration = this.videoPlayer.duration(),
             newTime = params.time;
 
@@ -361,12 +360,12 @@ function (HTML5Video, Resizer) {
         }
 
         this.videoPlayer.updatePlayTime(newTime);
+
+        this.el.trigger('seek', arguments);
     }
 
     function onEnded() {
-        this.el.trigger('ended', arguments);
-
-        var time = this.videoPlayer.duration();
+         var time = this.videoPlayer.duration();
 
         this.trigger('videoControl.pause', null);
         this.trigger('videoProgressSlider.notifyThroughHandleEnd', {
@@ -388,11 +387,11 @@ function (HTML5Video, Resizer) {
         // `duration`. In this case, slider doesn't reach the end point of
         // timeline.
         this.videoPlayer.updatePlayTime(time);
+
+        this.el.trigger('ended', arguments);
     }
 
     function onPause() {
-        this.el.trigger('pause', arguments);
-
         this.videoPlayer.log(
             'pause_video',
             {
@@ -408,11 +407,11 @@ function (HTML5Video, Resizer) {
         if (this.config.show_captions) {
             this.trigger('videoCaption.pause', null);
         }
+
+        this.el.trigger('pause', arguments);
     }
 
     function onPlay() {
-        this.el.trigger('play', arguments);
-
         this.videoPlayer.log(
             'play_video',
             {
@@ -439,6 +438,8 @@ function (HTML5Video, Resizer) {
         }
 
         this.videoPlayer.ready();
+
+        this.el.trigger('play', arguments);
     }
 
     function onUnstarted() { }
@@ -454,7 +455,7 @@ function (HTML5Video, Resizer) {
 
         this.trigger('videoQualityControl.onQualityChange', quality);
 
-        this.el.trigger('qualityChange', arguments);
+        this.el.trigger('qualitychange', arguments);
     }
 
     function onReady() {
@@ -464,7 +465,6 @@ function (HTML5Video, Resizer) {
 
         dfd.resolve();
 
-        this.el.trigger('ready', arguments);
         this.videoPlayer.log('load_video');
 
         availablePlaybackRates = this.videoPlayer.player
@@ -754,6 +754,7 @@ function (HTML5Video, Resizer) {
 
     function onVolumeChange(volume) {
         this.videoPlayer.player.setVolume(volume);
+        this.el.trigger('volumechange', arguments);
     }
 });
 
