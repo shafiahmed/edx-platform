@@ -2,10 +2,18 @@
   describe('VideoControl', function() {
     var state, videoControl, oldOTBD;
 
-    function initialize() {
-      loadFixtures('video_all.html');
+    function initialize(fixture) {
+      if (fixture) {
+        loadFixtures(fixture);
+      } else {
+        loadFixtures('video_all.html');
+      }
       state = new Video('#example');
       videoControl = state.videoControl;
+    }
+
+    function initializeYouTube() {
+        initialize('video.html');
     }
 
     beforeEach(function(){
@@ -146,6 +154,130 @@
           });
         });
       });
+    });
+
+    describe('Play placeholder', function () {
+
+      beforeEach(function () {
+        this.oldYT = window.YT;
+
+        jasmine.stubRequests();
+        window.YT = {
+          Player: function () { },
+          PlayerState: this.oldYT.PlayerState,
+          ready: function (f) {
+            f();
+          }
+        };
+
+        spyOn(window.YT, 'Player');
+      });
+
+      afterEach(function () {
+        window.YT = this.oldYT;
+      });
+
+
+      it ('works correctly on calling proper methods', function () {
+        initialize();
+        var btnPlay = state.el.find('.btn-play');
+
+        videoControl.showPlayPlaceholder();
+
+        expect(btnPlay).not.toHaveClass('is-hidden');
+        expect(btnPlay).toHaveAttrs({
+          'aria-hidden': 'false',
+          'tabindex': 0
+        });
+
+        videoControl.hidePlayPlaceholder();
+
+        expect(btnPlay).toHaveClass('is-hidden');
+        expect(btnPlay).toHaveAttrs({
+          'aria-hidden': 'true',
+          'tabindex': -1
+        });
+      });
+
+      var cases = [
+        {
+          name: 'PC',
+          isShown: false,
+          isTouch: null
+        },
+        {
+          name: 'iPad',
+          isShown: true,
+          isTouch: ['iPad']
+        },
+        {
+          name: 'iPhone',
+          isShown: false,
+          isTouch: ['iPhone']
+        }
+      ];
+
+      $.each(cases, function(index, data) {
+        var message = [
+            (data.isShown) ? 'is' : 'is not',
+            ' shown on',
+            data.name
+          ].join('');
+
+        it(message, function () {
+          window.onTouchBasedDevice.andReturn(data.isTouch);
+          initialize();
+          var btnPlay = state.el.find('.btn-play');
+
+          if (data.isShown) {
+            expect(btnPlay).not.toHaveClass('is-hidden');
+          } else {
+            expect(btnPlay).toHaveClass('is-hidden');
+          }
+        });
+      });
+
+      it('is shown on paused video on iPad in HTML5 player', function () {
+        window.onTouchBasedDevice.andReturn(['iPad']);
+        initialize();
+        var btnPlay = state.el.find('.btn-play');
+
+        videoControl.play();
+        videoControl.pause();
+
+        expect(btnPlay).not.toHaveClass('is-hidden');
+      });
+
+      it('is hidden on playing video on iPad in HTML5 player', function () {
+        window.onTouchBasedDevice.andReturn(['iPad']);
+        initialize();
+        var btnPlay = state.el.find('.btn-play');
+
+        videoControl.play();
+
+        expect(btnPlay).toHaveClass('is-hidden');
+      });
+
+      it('is hidden on paused video on iPad in YouTube player', function () {
+        window.onTouchBasedDevice.andReturn(['iPad']);
+        initializeYouTube();
+        var btnPlay = state.el.find('.btn-play');
+
+        videoControl.play();
+        videoControl.pause();
+
+        expect(btnPlay).toHaveClass('is-hidden');
+      });
+
+    });
+
+    it('show', function () {
+      initialize();
+      var controls = state.el.find('.video-controls');
+      controls.addClass('is-hidden');
+
+      videoControl.show();
+      expect(controls).not.toHaveClass('is-hidden');
     });
   });
 
