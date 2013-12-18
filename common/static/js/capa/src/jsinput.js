@@ -21,8 +21,8 @@ var JSInput = (function ($, undefined) {
 
 
     // Take a string and find the nested object that corresponds to it. E.g.:
-    //    deepKey(obj, "an.example") -> obj["an"]["example"]
-    var _deepKey = function(obj, path){
+    //    _deepKey(obj, "an.example") -> obj["an"]["example"]
+    function _deepKey(obj, path){
         for (var i = 0, p=path.split('.'), len = p.length; i < len; i++){
             obj = obj[p[i]];
         }
@@ -39,34 +39,33 @@ var JSInput = (function ($, undefined) {
 
         /*                      Private methods                          */
 
-        var sect = $(elem).parent().find('section[class="jsinput"]');
-        var sectAttr = function (e) { return $(sect).attr(e); };
-        var iframe = $(elem).find('iframe[name^="iframe_"]').get(0);
-        var cWindow = iframe.contentWindow;
-        var path = iframe.src.substring(0, iframe.src.lastIndexOf("/")+1);
-        // Get the hidden input field to pass to customresponse
-        var inputField = $(elem).parent().find('input[id^="input_"]');
-        // Get the grade function name
-        var getGradeFn = sectAttr("data");
-        // Get state getter
-        var getStateGetter = sectAttr("data-getstate");
-        // Get state setter
-        var getStateSetter = sectAttr("data-setstate");
-        // Get stored state
-        var getStoredState = sectAttr("data-stored");
-        // Bypass single-origin policy only if this attribute is "false"
-        // In that case, use JSChannel to do so.
-        var sop = sectAttr("data-sop"); 
+        var sect = $(elem).parent().find('section[class="jsinput"]'),
+            sectAttr = function (e) { return $(sect).attr(e); },
+            iframe = $(elem).find('iframe[name^="iframe_"]').get(0),
+            cWindow = iframe.contentWindow,
+            path = iframe.src.substring(0, iframe.src.lastIndexOf("/")+1),
+            // Get the hidden input field to pass to customresponse
+            inputField = $(elem).parent().find('input[id^="input_"]'),
+            // Get the grade function name
+            gradeFn = sectAttr("data"),
+            // Get state getter
+            stateGetter = sectAttr("data-getstate"),
+            // Get state setter
+            stateSetter = sectAttr("data-setstate"),
+            // Get stored state
+            storedState = sectAttr("data-stored"),
+            // Bypass single-origin policy only if this attribute is "false"
+            // In that case, use JSChannel to do so.
+            sop = sectAttr("data-sop"),
+            channel;
+        
         sop = (sop !== "false");
 
-        var channel;
         if (!sop) {
             channel = Channel.build({
                 window: cWindow,
                 origin: path,
-                scope: "JSInput",
-                onReady: function() {
-                }
+                scope: "JSInput"
             });
          }   
 
@@ -78,10 +77,10 @@ var JSInput = (function ($, undefined) {
 
             if (sop) {
                 ans = _deepKey(cWindow, gradeFn)();
-                // setstate presumes getstate, so don't getstate unless setstate
-                // is defined.
-                if (getStateGetter && getStateSetter) {
-                    state = unescape(_deepKey(cWindow, getStateGetter)());
+                // Setting state presumes getting state, so don't get state
+                // unless set state is defined.
+                if (stateGetter && stateSetter) {
+                    state = unescape(_deepKey(cWindow, stateGetter)());
                     store = {
                         answer: ans,
                         state:  state
@@ -98,9 +97,9 @@ var JSInput = (function ($, undefined) {
                     success: function(val) {
                         ans = decodeURI(val.toString());
 
-                        // setstate presumes getstate, so don't getstate unless 
-                        // setstate is defined.
-                        if (getStateGetter && getStateSetter) {
+                        // Setting state presumes getting state, so don't get
+                        // state unless set state is defined.
+                        if (stateGetter && stateSetter) {
                             channel.call({
                                 method: "getState",
                                 params: "",
@@ -125,23 +124,21 @@ var JSInput = (function ($, undefined) {
 
         /*                      Initialization                          */
 
-        var gradeFn = getGradeFn;
-
         // Put the update function as the value of the inputField's "waitfor"
         // attribute so that it is called when the check button is clicked.
         inputField.data('waitfor', update);
 
         // Check whether application takes in state and there is a saved
-        // state to give it. If getStateSetter is specified but calling it
+        // state to give it. If stateSetter is specified but calling it
         // fails, wait and try again, since the iframe might still be
         // loading.
-        if (getStateSetter && getStoredState) {
+        if (stateSetter && storedState) {
             var sval, jsonVal;
 
             try {
-              jsonVal = JSON.parse(getStoredState);
+              jsonVal = JSON.parse(storedState);
             } catch (err) {
-              jsonVal = getStoredState;
+              jsonVal = storedState;
             }
 
             if (typeof(jsonVal) === "object") {
@@ -159,13 +156,13 @@ var JSInput = (function ($, undefined) {
                 if (n < 5){
                     try {
                         if (sop) {
-                            _deepKey(cWindow, getStateSetter)(sval);
+                            _deepKey(cWindow, stateSetter)(sval);
                         } else {
                             channel.call({
                                 method: "setState",
                                 params: sval,
-                                success: function(v) {
-                                }
+                                success: function() {
+                                }    
                             });
                         }
                     } catch (err) {
@@ -184,7 +181,7 @@ var JSInput = (function ($, undefined) {
         var dataProcessed, all;
 
         // Find all jsinput elements
-        all = $(document).find('section[class="jsinput"]');
+        all = $('section.jsinput');
 
         // When a JSInput problem loads, its data-processed attribute is false,
         // so the jsconstructor will be called for it.
