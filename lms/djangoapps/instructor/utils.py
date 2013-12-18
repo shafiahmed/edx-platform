@@ -107,10 +107,10 @@ def create_list_from_csv(path_to_csv):
     return items
 
 
-def create_csv_from_student_anonymous_ids(student_anonymous_ids):
+def create_csv_from_student_anonymous_ids(student_anonymous_ids, filename):
     """Write a csv from student ids list."""
 
-    with open('student_anonymous_ids.csv', 'wb') as csv_file:
+    with open('{0}.csv'.format(filename), 'wb') as csv_file:
         csv_reader = csv.writer(csv_file)
         csv_reader.writerows([[sid] for sid in student_anonymous_ids])
 
