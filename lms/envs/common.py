@@ -655,6 +655,7 @@ courseware_js = (
 main_vendor_js = [
     'js/vendor/require.js',
     'js/RequireJS-namespace-undefine.js',
+    'js/logme.js',
     'js/vendor/json2.js',
     'js/vendor/jquery.min.js',
     'js/vendor/jquery-ui.min.js',
